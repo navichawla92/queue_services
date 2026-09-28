@@ -3,6 +3,7 @@
 namespace App\Domain\Access\Concerns;
 
 use App\Domain\Access\AuditLogger;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -10,13 +11,13 @@ use Illuminate\Support\Str;
  * Records created / updated / deleted audit entries with before/after values
  * of the changed attributes. Action names: "<model>.created", etc.
  *
+ * A model may declare `protected static array $auditIgnore = [...]` for
+ * operational columns that should not produce setup audit entries.
+ *
  * @mixin Model
  */
 trait Auditable
 {
-    /** Attributes never written to the audit log. */
-    protected static array $auditExcept = ['created_at', 'updated_at', 'password', 'remember_token'];
-
     public static function bootAuditable(): void
     {
         static::created(function (Model $model) {
@@ -24,8 +25,7 @@ trait Auditable
         });
 
         static::updated(function (Model $model) {
-            $changed = array_keys($model->getChanges());
-            $changed = array_values(array_diff($changed, static::$auditExcept));
+            $changed = array_values(array_diff(array_keys($model->getChanges()), static::auditExcluded()));
             if ($changed === []) {
                 return;
             }
@@ -41,6 +41,14 @@ trait Auditable
         });
     }
 
+    /** @return list<string> */
+    protected static function auditExcluded(): array
+    {
+        $ignore = property_exists(static::class, 'auditIgnore') ? static::$auditIgnore : [];
+
+        return array_merge(['created_at', 'updated_at', 'password', 'remember_token'], $ignore);
+    }
+
     protected static function auditAction(string $event): string
     {
         return Str::snake(class_basename(static::class)).'.'.$event;
@@ -52,8 +60,8 @@ trait Auditable
      */
     protected static function auditValues(Model $model, array $values): array
     {
-        $values = array_diff_key($values, array_flip(array_merge(static::$auditExcept, $model->getHidden())));
+        $values = array_diff_key($values, array_flip(array_merge(static::auditExcluded(), $model->getHidden())));
 
-        return array_map(fn ($v) => $v instanceof \DateTimeInterface ? $v->format(DATE_ATOM) : $v, $values);
+        return array_map(fn ($v) => $v instanceof DateTimeInterface ? $v->format(DATE_ATOM) : $v, $values);
     }
 }

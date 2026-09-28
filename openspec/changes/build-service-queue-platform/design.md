@@ -139,6 +139,13 @@ Composite unique indexes include `tenant_id`. Route model binding goes through t
 - Phone numbers are normalized to E.164 with `giggsey/libphonenumber-for-php`.
 - A retention job anonymizes customer PII older than the tenant's retention period, keeping aggregate facts.
 
+### 14. Organization model
+- **Departments belong to a location**, so ticket prefixes are unique per location (`unique(location_id, prefix)`).
+- **Services are company-wide.** A service is offered at a location through `location_service`, and that row holds the location's **default department** for the service. The service catalog (name, duration, channels) can only be edited by users covering all locations. Location managers choose what their location offers and which department it routes to.
+- **Employees** are a serving profile (`employees`) on top of a staff `User`. An employee's work locations are the user's location assignments (`location_user`), which avoids a second, drifting list. Departments and skills (services) are per employee.
+- **Hours** live in one `opening_hours` table: rows with a null department are the location's hours; rows for a department are that department's own hours. A department with any rows uses only those, intersected with the location's hours; otherwise it inherits the location's hours. `closures` replace the weekly hours for a date (closed all day, or special hours), per location or per department. Walk-ins are refused in the last `walkin_cutoff_minutes` of a window. Everything is evaluated in the location's time zone (`OperatingHours`).
+- **Live status** (`available` / `busy` / `on_break` / `offline`) plus the current location and desk sit on the employee row. Starting a shift picks the chosen desk, else the current desk at that location, else the default desk. Status columns are excluded from setup auditing.
+
 ## Risks / Trade-offs
 
 - **[Forgotten tenant scope on a raw query or new model]** → The trait is mandatory (CI check), `DB::table` is banned for tenant tables (lint rule), and the two-tenant isolation test suite runs on every route and channel.
@@ -148,7 +155,7 @@ Composite unique indexes include `tenant_id`. Route model binding goes through t
 - **[Wait estimates perceived as inaccurate]** → Estimates are shown as ranges and fall back to configured durations. Estimate vs actual is tracked, so the formula can be tuned later without spec changes.
 - **[Scope size: one very large change]** → Tasks are ordered so each phase ships a usable slice (foundation → queue + display → SMS → appointments → signage → feedback/analytics → SaaS). Reviews and merges go phase by phase.
 - **[Per-location queue lock becomes a hot spot]** → Lock hold time is kept to single-digit milliseconds (no external calls or broadcasts inside the lock; broadcasts go `afterCommit`). If a very large location ever needs more throughput, switch to `SKIP LOCKED` on MySQL 8.
-- **[Database compatibility]** → Supported: MariaDB 10.4+ (XAMPP dev) and MySQL 8 or MariaDB 10.6+ (production). Avoid features that are unavailable on MariaDB 10.4, such as `SKIP LOCKED`, `CHECK`-dependent logic, and window functions in hot paths. Run CI against MariaDB 10.4.
+- **[Database compatibility]** → Supported: MariaDB 10.4+ (XAMPP dev) and MySQL 8 or MariaDB 10.6+ (production). Avoid features that are unavailable on MariaDB 10.4, such as `SKIP LOCKED`, `CHECK`-dependent logic, and window functions in hot paths. Use `DATETIME` rather than `TIMESTAMP` for NOT NULL time columns: without `explicit_defaults_for_timestamp`, MariaDB 10.4 rejects a second NOT NULL `TIMESTAMP` that has no default. Run CI against MariaDB 10.4.
 - **[Rollup drift]** → Rollups are idempotent upserts, recomputed nightly for the trailing 7 days, and "today" is always computed live.
 
 ## Migration Plan

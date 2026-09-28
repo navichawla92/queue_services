@@ -16,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
-        channels: __DIR__.'/../routes/channels.php',
         health: '/up',
         then: function () {
             // One route file per surface; see design.md Decision 1.
@@ -32,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/display.php'));
         },
     )
+    // Private channel auth runs as the signed-in staff user with their tenant bound.
+    ->withBroadcasting(__DIR__.'/../routes/channels.php', ['middleware' => ['web', 'auth', 'tenant.user']])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'tenant.user' => ResolveTenantFromUser::class,
@@ -47,6 +48,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(SubstituteBindings::class, ResolveTenantFromUser::class);
         $middleware->prependToPriorityList(SubstituteBindings::class, ResolveTenantFromPublicId::class);
         $middleware->prependToPriorityList(SubstituteBindings::class, AuthenticateDevice::class);
+
+        // Provider callbacks are authenticated by their signature instead.
+        $middleware->validateCsrfTokens(except: ['webhooks/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

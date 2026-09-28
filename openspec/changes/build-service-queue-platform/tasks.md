@@ -31,76 +31,76 @@
 
 ## 4. Organization Setup
 
-- [ ] 4.1 Extend locations (base table + model created in 3.3) and create migrations/models for departments (unique prefix per location), services, service-location pivot, desks/rooms
-- [ ] 4.2 Create employee profile model, employee-location/department pivots, employee skills (employee-service pivot), default desk
-- [ ] 4.3 Create location hours, department hours and closures tables, plus an "is open / next opening" service with last-walk-in cutoff
-- [ ] 4.4 Build admin CRUD screens (Livewire) for locations, departments, services, desks, employees and hours/closures, with validation and deactivate/reactivate
-- [ ] 4.5 Implement live employee status (Available/Busy/On Break/Offline) and desk selection at shift start
-- [ ] 4.6 Generate the per-location public check-in identifier, QR code image and printable QR poster
+- [x] 4.1 Extend locations (base table + model created in 3.3) and create migrations/models for departments (unique prefix per location), services, service-location pivot, desks/rooms
+- [x] 4.2 Create employee profile model, employee-location/department pivots, employee skills (employee-service pivot), default desk
+- [x] 4.3 Create location hours, department hours and closures tables, plus an "is open / next opening" service with last-walk-in cutoff
+- [x] 4.4 Build admin CRUD screens (Livewire) for locations, departments, services, desks, employees and hours/closures, with validation and deactivate/reactivate
+- [x] 4.5 Implement live employee status (Available/Busy/On Break/Offline) and desk selection at shift start
+- [x] 4.6 Generate the per-location public check-in identifier, QR code image and printable QR poster
 
 ## 5. Routing and Wait Estimates
 
-- [ ] 5.1 Create the `routing_rules` table and an admin UI for ordered rules (service, customer type, weekdays, time window → department, priority)
-- [ ] 5.2 Implement the department resolver (first matching rule, else the service default) with unit tests
-- [ ] 5.3 Implement the eligible-employees query (location + department + skill + status)
-- [ ] 5.4 Implement the rolling average service time cache (per location/service, hourly refresh, fallback to expected duration)
-- [ ] 5.5 Implement the wait estimator (position, active eligible staff, average) with range rounding and a "unavailable" state; add unit tests
-- [ ] 5.6 Implement the unroutable-service check for self-service surfaces
+- [x] 5.1 Create the `routing_rules` table and an admin UI for ordered rules (service, customer type, weekdays, time window → department, priority)
+- [x] 5.2 Implement the department resolver (first matching rule, else the service default) with unit tests
+- [x] 5.3 Implement the eligible-employees query (location + department + skill + status)
+- [x] 5.4 Implement the rolling average service time cache (per location/service, hourly refresh, fallback to expected duration)
+- [x] 5.5 Implement the wait estimator (position, active eligible staff, average) with range rounding and a "unavailable" state; add unit tests
+- [x] 5.6 Implement the unroutable-service check for self-service surfaces
 
 ## 6. Ticket Core and State Machine
 
-- [ ] 6.1 Create `customers` (E.164 phone, consent fields, no-show count), `tickets` (status, channel, priority, timing columns, public token) and `ticket_events` tables
-- [ ] 6.2 Implement `ticket_sequences` and daily per-location/department number generation under a lock (A-001 reset per local day)
-- [ ] 6.3 Implement `TicketStateMachine` with the allowed transitions, `ticket_events` recording, hold-time tracking and audit entries
-- [ ] 6.4 Implement queue ordering (priority, then queued_at; appointment boost; held excluded; direct assignments)
-- [ ] 6.5 Implement the per-location queue lock (`location_queue_states` row with `queue_version`, `SELECT … FOR UPDATE`), use it for all queue mutations, and build the atomic "call next" on it, with a concurrency test proving no double-claim
-- [ ] 6.6 Implement actions: call specific, recall, assign, transfer (with policy for queue position), hold/release, start, complete (with outcome), no-show, cancel by customer
-- [ ] 6.7 Implement internal notes on tickets and customers (never exposed publicly)
-- [ ] 6.8 Emit domain events (`TicketCreated`, `TicketCalled`, `QueueChanged`, …) after commit with an incrementing per-location `queue_version`
+- [x] 6.1 Create `customers` (E.164 phone, consent fields, no-show count), `tickets` (status, channel, priority, timing columns, public token) and `ticket_events` tables
+- [x] 6.2 Implement `ticket_sequences` and daily per-location/department number generation under a lock (A-001 reset per local day)
+- [x] 6.3 Implement `TicketStateMachine` with the allowed transitions, `ticket_events` recording, hold-time tracking and audit entries
+- [x] 6.4 Implement queue ordering (priority, then queued_at; appointment boost; held excluded; direct assignments)
+- [x] 6.5 Implement the per-location queue lock (`location_queue_states` row with `queue_version`, `SELECT … FOR UPDATE`), use it for all queue mutations, and build the atomic "call next" on it, with a concurrency test proving no double-claim
+- [x] 6.6 Implement actions: call specific, recall, assign, transfer (with policy for queue position), hold/release, start, complete (with outcome), no-show, cancel by customer
+- [x] 6.7 Implement internal notes on tickets and customers (never exposed publicly)
+- [x] 6.8 Emit domain events (`TicketCreated`, `TicketCalled`, `QueueChanged`, …) after commit with an incrementing per-location `queue_version`
 
 ## 7. Customer Check-In
 
-- [ ] 7.1 Build the shared check-in flow (Livewire): name, phone (configurable required), service selection, optional department choice, SMS consent, validation
-- [ ] 7.2 Implement returning-customer matching by phone and duplicate active-ticket prevention
-- [ ] 7.3 Build the kiosk surface: device-paired, full-screen, large touch targets, text size/high contrast, language switch, 60 s inactivity reset, confirmation screen
-- [ ] 7.4 Build the QR/mobile check-in surface on the public location identifier, respecting hours and location active status
-- [ ] 7.5 Build the live ticket status page (public token, Echo subscription, polling fallback, leave-queue action)
-- [ ] 7.6 Build receptionist check-in in the staff console (channel "receptionist", can bypass the unroutable check)
-- [ ] 7.7 Implement appointment check-in by phone, confirmation code or SMS link, with fallback to walk-in
-- [ ] 7.8 Add i18n scaffolding (language files) for all customer-facing strings
+- [x] 7.1 Build the shared check-in flow (Livewire): name, phone (configurable required), service selection, optional department choice, SMS consent, validation
+- [x] 7.2 Implement returning-customer matching by phone and duplicate active-ticket prevention
+- [x] 7.3 Build the kiosk surface: device-paired, full-screen, large touch targets, text size/high contrast, language switch, 60 s inactivity reset, confirmation screen
+- [x] 7.4 Build the QR/mobile check-in surface on the public location identifier, respecting hours and location active status
+- [x] 7.5 Build the live ticket status page (public token, Echo subscription, polling fallback, leave-queue action)
+- [x] 7.6 Build receptionist check-in in the staff console (channel "receptionist", can bypass the unroutable check)
+- [ ] 7.7 Implement appointment check-in by phone, confirmation code or SMS link, with fallback to walk-in (built together with appointments in phase 11)
+- [x] 7.8 Add i18n scaffolding (language files) for all customer-facing strings
 
 ## 8. Staff Queue Dashboard
 
-- [ ] 8.1 Build the snapshot JSON endpoint for a location queue (tickets, statuses, staff, `queue_version`)
-- [ ] 8.2 Build the staff dashboard (Livewire + Echo): table columns per spec, live waiting timer, appointment/walk-in badge, notes indicator
-- [ ] 8.3 Add filters (department, service, status, employee, customer type) and a "My queue" view
-- [ ] 8.4 Wire the action buttons (call next, call, recall, assign, transfer dialog, hold/release, start, complete, no-show, notes) with permission checks
-- [ ] 8.5 Implement reconnect/resync behavior (version-gap detection, reconnect indicator, polling fallback)
-- [ ] 8.6 Add scheduler tasks: auto-no-show for called tickets, and end-of-day closeout to "Closed unserved" per location time zone
-- [ ] 8.7 Add a today's-appointments panel alongside the live queue
-- [ ] 8.8 Write feature tests for every lifecycle action and for invalid transitions
+- [x] 8.1 Build the snapshot JSON endpoint for a location queue (tickets, statuses, staff, `queue_version`)
+- [x] 8.2 Build the staff dashboard (Livewire + Echo): table columns per spec, live waiting timer, appointment/walk-in badge, notes indicator
+- [x] 8.3 Add filters (department, service, status, employee, customer type) and a "My queue" view
+- [x] 8.4 Wire the action buttons (call next, call, recall, assign, transfer dialog, hold/release, start, complete, no-show, notes) with permission checks
+- [x] 8.5 Implement reconnect/resync behavior (version-gap detection, reconnect indicator, polling fallback)
+- [x] 8.6 Add scheduler tasks: auto-no-show for called tickets, and end-of-day closeout to "Closed unserved" per location time zone
+- [ ] 8.7 Add a today's-appointments panel alongside the live queue (built with appointments in phase 11)
+- [x] 8.8 Write feature tests for every lifecycle action and for invalid transitions
 
 ## 9. Lobby Display
 
-- [ ] 9.1 Build display registration in admin (location, departments, layout, orientation, name display option) and the pairing screen with a code
-- [ ] 9.2 Build the standalone display page (Alpine + Echo) that renders from a display snapshot endpoint and persists its device token
-- [ ] 9.3 Implement the now-serving panel (ticket, desk/room, optional employee name, privacy-safe customer name option)
-- [ ] 9.4 Implement the waiting list panel with row limit and "+N more", plus optional average wait per department
-- [ ] 9.5 Implement the call highlight queue (sequential highlights, configurable duration, Web Audio chime unlocked at pairing, recall re-highlight)
-- [ ] 9.6 Implement the layout engine (queue-only, split zones, header, clock, ticker) with remote layout change via broadcast and a 30 s config poll
-- [ ] 9.7 Implement resilience: auto-reconnect, offline indicator, keep last state, polling fallback, Wake Lock, hidden cursor
-- [ ] 9.8 Test legibility at 720p, 1080p, 4K and in portrait; document TV/kiosk setup (browser kiosk mode, auto-start)
+- [x] 9.1 Build display registration in admin (location, departments, layout, orientation, name display option) and the pairing screen with a code
+- [x] 9.2 Build the standalone display page (Alpine + Echo) that renders from a display snapshot endpoint and persists its device token
+- [x] 9.3 Implement the now-serving panel (ticket, desk/room, optional employee name, privacy-safe customer name option)
+- [x] 9.4 Implement the waiting list panel with row limit and "+N more", plus optional average wait per department
+- [x] 9.5 Implement the call highlight queue (sequential highlights, configurable duration, Web Audio chime unlocked at pairing, recall re-highlight)
+- [x] 9.6 Implement the layout engine (queue-only, split zones, header, clock, ticker) with remote layout change via broadcast and a 30 s config poll
+- [x] 9.7 Implement resilience: auto-reconnect, offline indicator, keep last state, polling fallback, Wake Lock, hidden cursor
+- [x] 9.8 Test legibility at 720p, 1080p, 4K and in portrait; document TV/kiosk setup (browser kiosk mode, auto-start)
 
 ## 10. SMS Notifications
 
-- [ ] 10.1 Define the `SmsProvider` interface; implement `TwilioSmsProvider` and `LogSmsProvider`; tenant/location sender config with encrypted credentials
-- [ ] 10.2 Create `sms_messages`, `sms_opt_outs`, `notification_settings` (per tenant, with location overrides) and `sms_templates` tables
-- [ ] 10.3 Implement the restricted placeholder renderer, default templates for every event, and a template editor with preview and segment count
-- [ ] 10.4 Implement `NotificationDispatcher` (tenant active → enabled → consent → opt-out → quiet hours → allowance), then write the log row and dispatch the queued job
-- [ ] 10.5 Implement the send job with freshness re-check, exponential backoff retries and a stale-skip
-- [ ] 10.6 Implement Twilio status callback and inbound webhooks with signature validation; STOP/START/HELP handling
-- [ ] 10.7 Wire queue events to notifications: check-in confirmation, wait update threshold, position update, you're next, representative ready, desk change, transfer
-- [ ] 10.8 Build the message log UI for managers (filter by status, event, date)
+- [x] 10.1 Define the `SmsProvider` interface; implement `TwilioSmsProvider` and `LogSmsProvider`; tenant/location sender config with encrypted credentials
+- [x] 10.2 Create `sms_messages`, `sms_opt_outs`, `notification_settings` (per tenant, with location overrides) and `sms_templates` tables
+- [x] 10.3 Implement the restricted placeholder renderer, default templates for every event, and a template editor with preview and segment count
+- [x] 10.4 Implement `NotificationDispatcher` (tenant active → enabled → consent → opt-out → quiet hours → allowance), then write the log row and dispatch the queued job
+- [x] 10.5 Implement the send job with freshness re-check, exponential backoff retries and a stale-skip
+- [x] 10.6 Implement Twilio status callback and inbound webhooks with signature validation; STOP/START/HELP handling
+- [x] 10.7 Wire queue events to notifications: check-in confirmation, wait update threshold, position update, you're next, representative ready, desk change, transfer
+- [x] 10.8 Build the message log UI for managers (filter by status, event, date)
 
 ## 11. Appointment Scheduling
 

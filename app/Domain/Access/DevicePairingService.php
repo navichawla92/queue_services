@@ -4,6 +4,8 @@ namespace App\Domain\Access;
 
 use App\Domain\Access\Models\Device;
 use App\Domain\Access\Models\DevicePairing;
+use App\Domain\Display\DisplayChanged;
+use App\Domain\Display\DisplayNotifier;
 use App\Domain\Organization\Models\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -69,7 +71,7 @@ class DevicePairingService
             $token = Str::random(64);
 
             $device = new Device(['location_id' => $location->id, 'type' => $pairing->type, 'name' => $name]);
-            $device->forceFill(['token_hash' => Device::hashToken($token), 'paired_at' => now()])->save();
+            $device->forceFill(['token_hash' => Device::hashToken($token), 'channel_key' => Str::random(40), 'paired_at' => now()])->save();
 
             $pairing->forceFill(['device_id' => $device->id, 'token_encrypted' => $token])->save();
 
@@ -109,7 +111,9 @@ class DevicePairingService
 
     public function revoke(Device $device): void
     {
-        $device->forceFill(['revoked_at' => now(), 'token_hash' => null])->save();
+        // Tell the screen first (on its current channel), then kill token and channel.
+        app(DisplayNotifier::class)->device($device, DisplayChanged::REVOKED);
+        $device->forceFill(['revoked_at' => now(), 'token_hash' => null, 'channel_key' => null])->save();
     }
 
     private function generateCode(): string

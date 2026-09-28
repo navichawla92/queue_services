@@ -3,16 +3,23 @@
 namespace App\Providers;
 
 use App\Domain\Access\CurrentLocation;
+use App\Domain\Access\DeviceContext;
 use App\Domain\Access\LocationAccess;
 use App\Domain\Access\Roles;
 use App\Domain\Access\SupportSession;
 use App\Domain\Organization\Models\Location;
+use App\Http\Middleware\AuthenticateDevice;
 use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\EnsureTenantMember;
 use App\Http\Middleware\ResolveCurrentLocation;
+use App\Http\Middleware\ResolveTenantFromPublicId;
 use App\Http\Middleware\ResolveTenantFromUser;
 use App\Models\User;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
@@ -25,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(LocationAccess::class);
         $this->app->scoped(CurrentLocation::class);
+        $this->app->scoped(DeviceContext::class);
     }
 
     /**
@@ -45,10 +53,16 @@ class AppServiceProvider extends ServiceProvider
         // tenant/location middleware, or tenant-scoped queries fail closed.
         Livewire::addPersistentMiddleware([
             ResolveTenantFromUser::class,
+            ResolveTenantFromPublicId::class,
+            AuthenticateDevice::class,
             EnsureTenantMember::class,
             EnsurePlatformAdmin::class,
             ResolveCurrentLocation::class,
+            ThrottleRequests::class,
         ]);
+
+        // Public self-service endpoints (check-in, booking, feedback).
+        RateLimiter::for('checkin', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
 
         // Test-only tables used by the tenant isolation harness.
         if ($this->app->runningUnitTests()) {

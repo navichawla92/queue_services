@@ -62,6 +62,8 @@
             if (!res.ok) return 'offline';
 
             const me = await res.json();
+            const apps = { kiosk: '{{ route('display.kiosk.app') }}', display: '{{ route('display.app') }}' };
+            if (apps[me.device.type]) { window.location.replace(apps[me.device.type]); return 'paired'; }
             document.getElementById('paired-name').textContent = me.device.name;
             document.getElementById('paired-location').textContent = me.tenant.name + ' — ' + me.location.name;
             show('paired');

@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    // Outside production, SMS go to the log driver unless this is true.
+    'sms' => [
+        'allow_real_sends' => (bool) env('SMS_ALLOW_REAL_SENDS', false),
+    ],
+
 ];

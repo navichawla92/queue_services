@@ -51,7 +51,7 @@ class DeviceController extends Controller
         /** @var Device $device */
         $device = $request->attributes->get('device');
 
-        return response()->json([
+        $response = response()->json([
             'paired' => true,
             'device' => ['id' => $device->id, 'type' => $device->type, 'name' => $device->name, 'config' => $device->config ?? []],
             'location' => ['id' => $device->location->id, 'name' => $device->location->name],
@@ -61,5 +61,13 @@ class DeviceController extends Controller
                 'accent_color' => $device->tenant->accent_color,
             ],
         ]);
+
+        // Re-issue the cookie from a localStorage bearer token so page loads
+        // (/kiosk/app, /display/app) authenticate too.
+        if ($token = $request->bearerToken()) {
+            $response->withCookie(cookie(AuthenticateDevice::COOKIE, $token, 60 * 24 * 365 * 5, httpOnly: true, sameSite: 'lax'));
+        }
+
+        return $response;
     }
 }

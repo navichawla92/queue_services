@@ -19,6 +19,8 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property string $name
  * @property string|null $token_hash
+ * @property string|null $channel_key
+ * @property-read Location $location
  * @property array<string, mixed>|null $config
  * @property Carbon|null $revoked_at
  * @property Carbon|null $last_seen_at
@@ -36,7 +38,7 @@ class Device extends Model
 
     protected $fillable = ['location_id', 'type', 'name', 'config'];
 
-    protected $hidden = ['token_hash'];
+    protected $hidden = ['token_hash', 'channel_key'];
 
     protected function casts(): array
     {

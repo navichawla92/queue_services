@@ -36,8 +36,18 @@ class RouteAuthorizationTest extends TestCase
             'admin.branding' => ['get', '/admin/branding', [Roles::COMPANY_ADMIN]],
             'admin.audit' => ['get', '/admin/audit', [Roles::COMPANY_ADMIN]],
             'admin.devices' => ['get', '/admin/devices', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'admin.sms' => ['get', '/admin/sms', [Roles::COMPANY_ADMIN]],
+            'admin.sms.log' => ['get', '/admin/sms/log', [Roles::COMPANY_ADMIN]],
+            'admin.locations' => ['get', '/admin/locations', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.locations.show' => ['get', '/admin/locations/{location}', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.locations.qr' => ['get', '/admin/locations/{location}/qr.svg', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.locations.poster' => ['get', '/admin/locations/{location}/poster', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.services' => ['get', '/admin/services', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.employees' => ['get', '/admin/employees', Roles::ADMIN_CONSOLE_ROLES],
             'staff.home' => ['get', '/staff', self::ALL],
             'staff.location.switch' => ['post', '/staff/location/{location}', self::ALL],
+            'staff.queue.snapshot' => ['get', '/staff/queue/snapshot', self::ALL],
+            'staff.checkin' => ['get', '/staff/checkin', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER, Roles::RECEPTIONIST]],
         ];
     }
 

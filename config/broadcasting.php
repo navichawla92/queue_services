@@ -43,6 +43,9 @@ return [
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+                // Keep queue actions fast if Reverb is down; clients fall back to polling.
+                'connect_timeout' => 1,
+                'timeout' => 2,
             ],
         ],
 
