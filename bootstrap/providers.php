@@ -2,6 +2,7 @@
 
 use App\Providers\AccessServiceProvider;
 use App\Providers\AppServiceProvider;
+use App\Providers\FeedbackServiceProvider;
 use App\Providers\FortifyServiceProvider;
 use App\Providers\NotificationsServiceProvider;
 use App\Providers\OrganizationServiceProvider;
@@ -17,5 +18,6 @@ return [
     QueueServiceProvider::class,
     NotificationsServiceProvider::class,
     SchedulingServiceProvider::class,
+    FeedbackServiceProvider::class,
     FortifyServiceProvider::class,
 ];

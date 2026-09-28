@@ -43,7 +43,15 @@ class Plan extends Model
     /** Null means unlimited. */
     public function limit(string $key): ?int
     {
-        return $this->limits[$key] ?? null;
+        $value = $this->limits[$key] ?? null;
+
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    /** Non-numeric plan option (e.g. sms_policy). */
+    public function option(string $key, mixed $default = null): mixed
+    {
+        return $this->limits[$key] ?? $default;
     }
 
     protected static function newFactory(): PlanFactory

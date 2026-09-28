@@ -14,7 +14,7 @@ class LocationSetup extends Component
 {
     use AuthorizesLocations;
 
-    public const TABS = ['departments', 'desks', 'services', 'routing', 'hours', 'closures', 'qr'];
+    public const TABS = ['departments', 'desks', 'services', 'routing', 'hours', 'closures', 'booking', 'qr'];
 
     public Location $location;
 

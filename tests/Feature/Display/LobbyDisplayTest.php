@@ -122,7 +122,7 @@ class LobbyDisplayTest extends TestCase
         $key = $this->device->fresh()->channel_key;
 
         $this->issue();
-        Event::assertDispatched(DisplayChanged::class, fn (DisplayChanged $e) => $e->broadcastOn()->name === 'display.'.$key && $e->reason === 'queue');
+        Event::assertDispatched(DisplayChanged::class, fn (DisplayChanged $e) => in_array('display.'.$key, array_column($e->broadcastOn(), 'name'), true) && $e->reason === 'queue');
 
         $this->seed(RolesAndPermissionsSeeder::class);
         $admin = $this->userIn($this->tenant);
@@ -144,7 +144,7 @@ class LobbyDisplayTest extends TestCase
 
         app(DevicePairingService::class)->revoke($this->device->fresh());
 
-        Event::assertDispatched(DisplayChanged::class, fn (DisplayChanged $e) => $e->broadcastOn()->name === 'display.'.$key && $e->reason === 'revoked');
+        Event::assertDispatched(DisplayChanged::class, fn (DisplayChanged $e) => in_array('display.'.$key, array_column($e->broadcastOn(), 'name'), true) && $e->reason === 'revoked');
         $this->assertNull($this->device->fresh()->channel_key);
         $this->tenantContext()->clear();
         $this->withToken($this->token)->getJson('/display/snapshot')->assertUnauthorized();

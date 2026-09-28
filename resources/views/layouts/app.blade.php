@@ -11,7 +11,25 @@
 <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
     <nav class="bg-slate-900 text-slate-100">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-            <span class="font-semibold">{{ app(\App\Domain\Tenancy\TenantContext::class)->get()?->brandName() ?? config('app.name') }}</span>
+            <div class="flex items-center gap-5">
+                <span class="font-semibold">{{ app(\App\Domain\Tenancy\TenantContext::class)->get()?->brandName() ?? config('app.name') }}</span>
+                @auth
+                    @if (app(\App\Domain\Tenancy\TenantContext::class)->check())
+                        <div class="flex gap-4 text-sm text-slate-300">
+                            @can('access-staff') <a href="{{ route('staff.home') }}" class="hover:text-white">{{ __('Queue') }}</a> @endcan
+                            @can('checkin.create') <a href="{{ route('staff.checkin') }}" class="hover:text-white">{{ __('Check in') }}</a> @endcan
+                            @can('appointments.manage') <a href="{{ route('staff.appointments') }}" class="hover:text-white">{{ __('Appointments') }}</a> @endcan
+                            @can('access-admin') <a href="{{ route('admin.home') }}" class="hover:text-white">{{ __('Admin') }}</a> @endcan
+                            @can('feedback.view')
+                                @php $alerts = auth()->user()->unreadNotifications()->where('data->kind', 'low_feedback')->count(); @endphp
+                                @if ($alerts)
+                                    <a href="{{ route('admin.feedback', ['maxRating' => 2]) }}" class="rounded bg-red-600 px-2 text-white" data-testid="feedback-alerts">{{ trans_choice(':count low rating|:count low ratings', $alerts, ['count' => $alerts]) }}</a>
+                                @endif
+                            @endcan
+                        </div>
+                    @endif
+                @endauth
+            </div>
             @auth
                 @if (($switchableLocations ?? collect())->count() > 1)
                     <div class="flex items-center gap-2 text-sm" data-testid="location-switcher">
@@ -52,6 +70,22 @@
             </div>
         </div>
     @endif
+
+    @auth
+        @if (app(\App\Domain\Tenancy\TenantContext::class)->check() && auth()->user()->can('tenant.manage'))
+            @php $usageWarnings = app(\App\Domain\Billing\Usage::class)->warnings(); @endphp
+            @if ($usageWarnings)
+                <div class="bg-amber-100 text-amber-900" data-testid="usage-banner">
+                    <div class="mx-auto max-w-7xl px-4 py-2 text-sm">
+                        @foreach ($usageWarnings as $w)
+                            <span class="mr-4">{{ __(':item: :used of :limit (:pct%)', ['item' => __($w['label']), 'used' => $w['used'], 'limit' => $w['limit'], 'pct' => $w['percent']]) }}</span>
+                        @endforeach
+                        <a href="{{ route('admin.usage') }}" class="underline">{{ __('Plan & usage') }}</a>
+                    </div>
+                </div>
+            @endif
+        @endif
+    @endauth
 
     <main class="mx-auto max-w-7xl px-4 py-8">
         {{ $slot ?? '' }}

@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Setup;
 
 use App\Domain\Access\Roles;
+use App\Domain\Billing\LimitGuard;
 use App\Domain\Organization\Models\Department;
 use App\Domain\Organization\Models\Desk;
 use App\Domain\Organization\Models\Employee;
@@ -133,6 +134,9 @@ class Employees extends Component
         }
 
         $isNew = $employee === null;
+        if ($isNew) {
+            app(LimitGuard::class)->assertCanAdd('staff_users', 'email');
+        }
 
         $employee = DB::transaction(function () use ($employee, $existingUser, $canManageUsers, $accessibleIds): Employee {
             if ($canManageUsers) {
@@ -174,6 +178,9 @@ class Employees extends Component
         $employee = $this->findManageable($employeeId);
         abort_if($employee->user_id === $this->actor()->id, 422, __('You cannot deactivate yourself.'));
 
+        if ($active && ! $employee->user->is_active) {
+            app(LimitGuard::class)->assertCanAdd('staff_users', 'email');
+        }
         $active ? $employee->user->reactivate() : $employee->user->deactivate();
     }
 

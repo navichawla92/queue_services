@@ -32,6 +32,7 @@ use Illuminate\Support\Str;
  * @property int $booking_cutoff_minutes
  * @property int|null $appointment_capacity_per_hour
  * @property int $appointment_grace_minutes
+ * @property bool $feedback_enabled
  * @property bool $is_active
  */
 class Location extends Model
@@ -43,13 +44,14 @@ class Location extends Model
         'is_active' => true, 'walkin_cutoff_minutes' => 15,
         'booking_enabled' => true, 'booking_choose_employee' => false, 'booking_lead_minutes' => 120,
         'booking_horizon_days' => 60, 'booking_buffer_minutes' => 5, 'booking_cutoff_minutes' => 60,
-        'appointment_grace_minutes' => 15,
+        'appointment_grace_minutes' => 15, 'feedback_enabled' => true,
     ];
 
     protected $fillable = [
         'name', 'address', 'timezone', 'phone', 'walkin_cutoff_minutes', 'is_active',
         'booking_enabled', 'booking_choose_employee', 'booking_lead_minutes', 'booking_horizon_days',
         'booking_buffer_minutes', 'booking_cutoff_minutes', 'appointment_capacity_per_hour', 'appointment_grace_minutes',
+        'feedback_enabled',
     ];
 
     protected function casts(): array
@@ -60,6 +62,7 @@ class Location extends Model
             'booking_lead_minutes' => 'integer', 'booking_horizon_days' => 'integer',
             'booking_buffer_minutes' => 'integer', 'booking_cutoff_minutes' => 'integer',
             'appointment_capacity_per_hour' => 'integer', 'appointment_grace_minutes' => 'integer',
+            'feedback_enabled' => 'boolean',
         ];
     }
 

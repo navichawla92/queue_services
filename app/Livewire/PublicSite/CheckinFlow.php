@@ -2,6 +2,7 @@
 
 namespace App\Livewire\PublicSite;
 
+use App\Domain\Billing\Features;
 use App\Domain\Organization\Models\Department;
 use App\Domain\Organization\Models\Location;
 use App\Domain\Organization\Models\Service;
@@ -16,6 +17,8 @@ use App\Domain\Queue\IssueTicket;
 use App\Domain\Queue\Models\Ticket;
 use App\Domain\Queue\PhoneNumbers;
 use App\Domain\Queue\QueuePositions;
+use App\Domain\Scheduling\AppointmentCheckin;
+use App\Domain\Scheduling\Exceptions\BookingNotAllowedException;
 use App\Domain\Tenancy\TenantContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -141,12 +144,52 @@ abstract class CheckinFlow extends Component
         $this->afterCheckin($ticket);
     }
 
+    // ---- Appointment arrival (customer-check-in "Appointment check-in") ----
+
+    public string $lookup = '';
+
+    public bool $appointmentNotFound = false;
+
+    public function haveAppointment(): void
+    {
+        abort_unless(app(Features::class)->enabled('appointments'), 404);
+        $this->error = null;
+        $this->appointmentNotFound = false;
+        $this->step = 'appointment';
+    }
+
+    public function submitAppointment(AppointmentCheckin $checkin): void
+    {
+        $this->validate(['lookup' => ['required', 'string', 'max:30']]);
+
+        $appointment = $checkin->find($this->location(), $this->lookup);
+        if ($appointment === null) {
+            $this->appointmentNotFound = true;
+
+            return;
+        }
+
+        try {
+            $ticket = $checkin->checkIn($appointment, $this->channel(), $this->actor());
+        } catch (BookingNotAllowedException $e) {
+            $this->error = $e->getMessage();
+
+            return;
+        }
+
+        $this->ticketId = $ticket->id;
+        $this->existing = false;
+        $this->step = 'done';
+        $this->afterCheckin($ticket);
+    }
+
     /** Hook for surfaces (e.g. mobile redirects to the status page). */
     protected function afterCheckin(Ticket $ticket): void {}
 
     public function back(): void
     {
         $this->error = null;
+        $this->appointmentNotFound = false;
         $this->step = match ($this->step) {
             'details' => 'service',
             default => 'start',
@@ -155,7 +198,7 @@ abstract class CheckinFlow extends Component
 
     public function startOver(): void
     {
-        $this->reset('step', 'serviceId', 'departmentId', 'name', 'phone', 'smsConsent', 'ticketId', 'existing', 'error');
+        $this->reset('step', 'serviceId', 'departmentId', 'name', 'phone', 'smsConsent', 'ticketId', 'existing', 'error', 'lookup', 'appointmentNotFound');
         $this->resetValidation();
     }
 

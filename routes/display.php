@@ -29,6 +29,7 @@ Route::middleware('device:kiosk')->get('/kiosk/app', KioskCheckin::class)->name(
 Route::middleware('device:display')->group(function () {
     Route::get('/display/app', [DisplayController::class, 'app'])->name('app');
     Route::get('/display/snapshot', [DisplayController::class, 'snapshot'])->name('snapshot');
+    Route::get('/display/signage', [DisplayController::class, 'signage'])->name('signage');
 });
 
 // Local development only: start a device session from a known token (used

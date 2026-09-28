@@ -55,6 +55,7 @@ class QueueSnapshot
     public function toArray(Location $location): array
     {
         $tickets = $this->activeTickets($location);
+        $positions = $this->positions->estimateMany($location);
 
         return [
             'version' => $this->version($location),
@@ -75,7 +76,7 @@ class QueueSnapshot
                 'serving_employee' => $t->servingEmployee?->display_name,
                 'desk' => $t->desk?->label,
                 'notes_count' => $t->notes_count,
-                'position' => $t->status === TicketStatus::Waiting ? $this->positions->estimate($t)['position'] : null,
+                'position' => $positions[$t->id]['position'] ?? null,
             ])->values()->all(),
             'staff' => $this->staff($location)->map(fn (Employee $e) => [
                 'id' => $e->id,

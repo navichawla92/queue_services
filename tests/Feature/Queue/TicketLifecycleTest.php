@@ -33,6 +33,9 @@ class TicketLifecycleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // DATETIME columns store whole seconds; keep "now" on a second boundary
+        // so travelled durations are exact.
+        $this->freezeSecond();
         [$this->tenant] = $this->twoTenants();
         $this->buildQueue($this->tenant);
         $this->queue = app(TicketStateMachine::class);

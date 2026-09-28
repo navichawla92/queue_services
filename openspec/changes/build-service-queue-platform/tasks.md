@@ -22,7 +22,7 @@
 ## 3. Access Control and Audit
 
 - [x] 3.1 Install auth scaffolding (Breeze/Fortify): login, logout, password reset, throttling/lockout, idle session timeout
-- [ ] 3.2 Configure spatie permissions with teams = tenant; seed roles (Company Admin, Location Manager, Receptionist, Employee) and permissions
+- [x] 3.2 Configure spatie permissions with teams = tenant; seed roles (Company Admin, Location Manager, Receptionist, Employee) and permissions
 - [x] 3.3 Add the `location_user` pivot and location-scope checks in policies; add a location switcher for multi-location users
 - [x] 3.4 Implement the platform-admin flag, `platform/*` route group, and audited support sessions with a visible banner
 - [x] 3.5 Create the append-only `audit_logs` table, an audit service and model observers; add an audit log viewer for company admins
@@ -66,7 +66,7 @@
 - [x] 7.4 Build the QR/mobile check-in surface on the public location identifier, respecting hours and location active status
 - [x] 7.5 Build the live ticket status page (public token, Echo subscription, polling fallback, leave-queue action)
 - [x] 7.6 Build receptionist check-in in the staff console (channel "receptionist", can bypass the unroutable check)
-- [ ] 7.7 Implement appointment check-in by phone, confirmation code or SMS link, with fallback to walk-in (built together with appointments in phase 11)
+- [x] 7.7 Implement appointment check-in by phone, confirmation code or SMS link, with fallback to walk-in (built together with appointments in phase 11)
 - [x] 7.8 Add i18n scaffolding (language files) for all customer-facing strings
 
 ## 8. Staff Queue Dashboard
@@ -77,7 +77,7 @@
 - [x] 8.4 Wire the action buttons (call next, call, recall, assign, transfer dialog, hold/release, start, complete, no-show, notes) with permission checks
 - [x] 8.5 Implement reconnect/resync behavior (version-gap detection, reconnect indicator, polling fallback)
 - [x] 8.6 Add scheduler tasks: auto-no-show for called tickets, and end-of-day closeout to "Closed unserved" per location time zone
-- [ ] 8.7 Add a today's-appointments panel alongside the live queue (built with appointments in phase 11)
+- [x] 8.7 Add a today's-appointments panel alongside the live queue (built with appointments in phase 11)
 - [x] 8.8 Write feature tests for every lifecycle action and for invalid transitions
 
 ## 9. Lobby Display
@@ -104,58 +104,58 @@
 
 ## 11. Appointment Scheduling
 
-- [ ] 11.1 Create `employee_schedules`, `time_off`, `appointments` (status, confirmation code, manage token) and `appointment_reminders` tables
-- [ ] 11.2 Build the admin/employee availability UI (weekly hours per location, time off) and booking settings (lead time, horizon, buffer, cutoff, capacity caps)
-- [ ] 11.3 Implement `SlotFinder` (hours ∩ schedule − time off − bookings − caps, within the booking window) with unit tests
-- [ ] 11.4 Build the public booking page (location → service → optional employee → date/slot → details + consent) with double-booking protection under lock
-- [ ] 11.5 Build staff booking/edit/reschedule/cancel in the console with override warnings
-- [ ] 11.6 Build the customer manage page (reschedule/cancel via signed token, cutoff enforcement)
-- [ ] 11.7 Implement confirmation, reschedule, cancellation and reminder SMS (scheduler every 5 min, idempotent, quiet hours)
-- [ ] 11.8 Implement appointment status flow, auto-no-show after grace, customer no-show count and optional booking restriction
-- [ ] 11.9 Link appointment check-in tickets to appointments and sync status (Arrived, In Service, Completed, No-Show)
+- [x] 11.1 Create `employee_schedules`, `time_off`, `appointments` (status, confirmation code, manage token) and `appointment_reminders` tables
+- [x] 11.2 Build the admin/employee availability UI (weekly hours per location, time off) and booking settings (lead time, horizon, buffer, cutoff, capacity caps)
+- [x] 11.3 Implement `SlotFinder` (hours ∩ schedule − time off − bookings − caps, within the booking window) with unit tests
+- [x] 11.4 Build the public booking page (location → service → optional employee → date/slot → details + consent) with double-booking protection under lock
+- [x] 11.5 Build staff booking/edit/reschedule/cancel in the console with override warnings
+- [x] 11.6 Build the customer manage page (reschedule/cancel via signed token, cutoff enforcement)
+- [x] 11.7 Implement confirmation, reschedule, cancellation and reminder SMS (scheduler every 5 min, idempotent, quiet hours)
+- [x] 11.8 Implement appointment status flow, auto-no-show after grace, customer no-show count and optional booking restriction
+- [x] 11.9 Link appointment check-in tickets to appointments and sync status (Arrived, In Service, Completed, No-Show)
 
 ## 12. Digital Signage
 
-- [ ] 12.1 Create `signage_items`, `playlists`, `playlist_items`, `playlist_schedules`, `display_playlists` and `ticker_messages` tables
-- [ ] 12.2 Build the content library UI for all item types with media upload validation (type/size per plan) and QR slide generation
-- [ ] 12.3 Build the playlist editor (ordering, durations, date ranges) and schedule editor (date range, weekdays, time, default playlist, specificity precedence)
-- [ ] 12.4 Implement the manifest resolver endpoint (current playlist + items + media URLs + hash) and a `SignageChanged` broadcast
-- [ ] 12.5 Implement the display-side player: rotation, video playback, skip expired items, Service Worker media caching, 60 s manifest poll
-- [ ] 12.6 Implement call-highlight priority over signage (overlay, mute video during chime) and ticker rendering
+- [x] 12.1 Create `signage_items`, `playlists`, `playlist_items`, `playlist_schedules`, `display_playlists` and `ticker_messages` tables
+- [x] 12.2 Build the content library UI for all item types with media upload validation (type/size per plan) and QR slide generation
+- [x] 12.3 Build the playlist editor (ordering, durations, date ranges) and schedule editor (date range, weekdays, time, default playlist, specificity precedence)
+- [x] 12.4 Implement the manifest resolver endpoint (current playlist + items + media URLs + hash) and a `SignageChanged` broadcast
+- [x] 12.5 Implement the display-side player: rotation, video playback, skip expired items, Service Worker media caching, 60 s manifest poll
+- [x] 12.6 Implement call-highlight priority over signage (overlay, mute video during chime) and ticker rendering
 
 ## 13. Customer Feedback
 
-- [ ] 13.1 Create `feedback_requests` (token, expiry, used) and `feedback_responses` (ratings, comment, attribution) tables, plus per-tenant feedback settings (delay, cooldown, extra questions, alert threshold)
-- [ ] 13.2 Trigger a delayed feedback request on completion, respecting consent, cooldown and quiet hours
-- [ ] 13.3 Build the public branded feedback page with single-use, expiring link handling
-- [ ] 13.4 Implement low-score alerts (in-app notification and optional email to location managers)
-- [ ] 13.5 Build the feedback review list with filters and employee self-view (tenant setting)
+- [x] 13.1 Create `feedback_requests` (token, expiry, used) and `feedback_responses` (ratings, comment, attribution) tables, plus per-tenant feedback settings (delay, cooldown, extra questions, alert threshold)
+- [x] 13.2 Trigger a delayed feedback request on completion, respecting consent, cooldown and quiet hours
+- [x] 13.3 Build the public branded feedback page with single-use, expiring link handling
+- [x] 13.4 Implement low-score alerts (in-app notification and optional email to location managers)
+- [x] 13.5 Build the feedback review list with filters and employee self-view (tenant setting)
 
 ## 14. Analytics and Reporting
 
-- [ ] 14.1 Create the `daily_stats` rollup table and an idempotent nightly rollup job (trailing 7 days recompute)
-- [ ] 14.2 Implement the KPI query service with documented definitions (live for today, rollups for history), respecting location time zones and access scope
-- [ ] 14.3 Build the report filters component (date range, location, department, service, employee) shared by all reports
-- [ ] 14.4 Build reports: overview KPIs, volume trends (daily/weekly/monthly), wait/service times, per employee/department/location, peak-hours heatmap, no-show and abandonment, appointments vs walk-ins, satisfaction
-- [ ] 14.5 Build the live location operations dashboard (waiting count, longest wait, staff status, SLA breach highlighting)
-- [ ] 14.6 Build the multi-location management dashboard with side-by-side comparison and drill-down
-- [ ] 14.7 Implement CSV export (streamed or queued for large ranges) with audit logging
-- [ ] 14.8 Add KPI correctness tests with fixture scenarios (e.g. hold excluded from wait) and a performance check on 12 months of seeded data
+- [x] 14.1 Create the `daily_stats` rollup table and an idempotent nightly rollup job (trailing 7 days recompute)
+- [x] 14.2 Implement the KPI query service with documented definitions (live for today, rollups for history), respecting location time zones and access scope
+- [x] 14.3 Build the report filters component (date range, location, department, service, employee) shared by all reports
+- [x] 14.4 Build reports: overview KPIs, volume trends (daily/weekly/monthly), wait/service times, per employee/department/location, peak-hours heatmap, no-show and abandonment, appointments vs walk-ins, satisfaction
+- [x] 14.5 Build the live location operations dashboard (waiting count, longest wait, staff status, SLA breach highlighting)
+- [x] 14.6 Build the multi-location management dashboard with side-by-side comparison and drill-down
+- [x] 14.7 Implement CSV export (streamed or queued for large ranges) with audit logging
+- [x] 14.8 Add KPI correctness tests with fixture scenarios (e.g. hold excluded from wait) and a performance check on 12 months of seeded data
 
 ## 15. SaaS Plans, Usage and Platform Console
 
-- [ ] 15.1 Implement the plan features/limits schema, the seeded "Internal (unlimited)" plan and sample commercial plans
-- [ ] 15.2 Implement `feature:*` middleware/gates and UI gating with upgrade messaging
-- [ ] 15.3 Implement `LimitGuard` for locations, staff users and displays; SMS overage policy
-- [ ] 15.4 Implement `usage_counters` metering (SMS segments, locations, users, displays, tickets, appointments, storage) with 80%/100% warnings (banner + email)
-- [ ] 15.5 Build the tenant usage page and per-period usage export
-- [ ] 15.6 Build the platform console: tenant list, create tenant with invite, suspend/reactivate, change plan, start support session
+- [x] 15.1 Implement the plan features/limits schema, the seeded "Internal (unlimited)" plan and sample commercial plans
+- [x] 15.2 Implement `feature:*` middleware/gates and UI gating with upgrade messaging
+- [x] 15.3 Implement `LimitGuard` for locations, staff users and displays; SMS overage policy
+- [x] 15.4 Implement `usage_counters` metering (SMS segments, locations, users, displays, tickets, appointments, storage) with 80%/100% warnings (banner + email)
+- [x] 15.5 Build the tenant usage page and per-period usage export
+- [x] 15.6 Build the platform console: tenant list, create tenant with invite, suspend/reactivate, change plan, start support session
 
 ## 16. Privacy, Hardening and Launch
 
-- [ ] 16.1 Implement the PII retention/anonymization job per tenant retention setting
-- [ ] 16.2 Run the full two-tenant isolation suite across all routes, channels, jobs and webhooks; fix any leaks
-- [ ] 16.3 Security review: rate-limit public endpoints (check-in, booking, feedback), CSRF, signed URLs, upload scanning, security headers
-- [ ] 16.4 Load test: concurrent call next, 50 displays per location, and a burst of check-ins; verify 2 s real-time targets
-- [ ] 16.5 Write the deployment runbook (supervisor for Reverb/queue, cron, Twilio webhooks, A2P registration, backups) and seed the internal tenant
-- [ ] 16.6 Pilot at one location (kiosk + TV + staff onboarding), collect feedback, then roll out to the remaining locations
+- [x] 16.1 Implement the PII retention/anonymization job per tenant retention setting
+- [x] 16.2 Run the full two-tenant isolation suite across all routes, channels, jobs and webhooks; fix any leaks
+- [x] 16.3 Security review: rate-limit public endpoints (check-in, booking, feedback), CSRF, signed URLs, upload scanning, security headers
+- [x] 16.4 Load test: concurrent call next, 50 displays per location, and a burst of check-ins; verify 2 s real-time targets
+- [x] 16.5 Write the deployment runbook (supervisor for Reverb/queue, cron, Twilio webhooks, A2P registration, backups) and seed the internal tenant
+- [ ] 16.6 Pilot at one location (kiosk + TV + staff onboarding), collect feedback, then roll out to the remaining locations — operational step for the business; checklist in docs/deployment.md §9

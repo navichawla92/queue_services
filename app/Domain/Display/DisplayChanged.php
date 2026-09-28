@@ -6,9 +6,10 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 /**
- * Ping to one paired lobby display: its queue, config, signage changed, or
- * it was revoked. The channel name ends in the device's secret channel key
- * (rotated on revoke); the display then reloads its snapshot.
+ * Ping to paired lobby displays: their queue, config or signage changed, or
+ * the device was revoked. Each display listens on "display.{channelKey}"
+ * (secret, rotated on revoke). One event may target many displays: the
+ * Pusher protocol delivers it to all listed channels in a single request.
  */
 class DisplayChanged implements ShouldBroadcastNow
 {
@@ -20,15 +21,25 @@ class DisplayChanged implements ShouldBroadcastNow
 
     public const REVOKED = 'revoked';
 
+    /** Pusher/Reverb accept at most 100 channels per trigger. */
+    public const MAX_CHANNELS = 100;
+
+    /** @var list<string> */
+    private array $channelKeys;
+
+    /** @param  string|list<string>  $channelKeys */
     public function __construct(
-        private readonly string $channelKey,
+        string|array $channelKeys,
         public readonly string $reason,
         public readonly int $version = 0,
-    ) {}
+    ) {
+        $this->channelKeys = is_string($channelKeys) ? [$channelKeys] : $channelKeys;
+    }
 
-    public function broadcastOn(): Channel
+    /** @return list<Channel> */
+    public function broadcastOn(): array
     {
-        return new Channel('display.'.$this->channelKey);
+        return array_map(fn (string $key) => new Channel('display.'.$key), $this->channelKeys);
     }
 
     public function broadcastAs(): string

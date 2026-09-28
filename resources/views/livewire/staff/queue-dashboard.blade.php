@@ -161,6 +161,24 @@
         </section>
     @endforeach
 
+    <section data-testid="todays-appointments">
+        <div class="mb-2 flex items-center justify-between">
+            <h2 class="font-semibold">{{ __("Today's appointments") }} <span class="text-slate-400">({{ $appointments->count() }})</span></h2>
+            @can('appointments.manage') <a href="{{ route('staff.appointments') }}" class="text-sm underline">{{ __('Manage') }}</a> @endcan
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+            @forelse ($appointments as $a)
+                <span @class(['rounded px-3 py-1 shadow-sm', 'bg-purple-100' => $a->status->value === 'arrived', 'bg-white' => $a->status->value !== 'arrived'])>
+                    <span class="font-mono">{{ $a->starts_at->setTimezone($timezone)->format('H:i') }}</span>
+                    {{ $a->customer_name }} · {{ $a->service->name }}{{ $a->employee ? ' · '.$a->employee->display_name : '' }}
+                    · <em>{{ $a->status->label() }}</em>
+                </span>
+            @empty
+                <span class="text-slate-400">{{ __('No more appointments today.') }}</span>
+            @endforelse
+        </div>
+    </section>
+
     <section>
         <h2 class="mb-2 font-semibold">{{ __('Staff on shift') }}</h2>
         <div class="flex flex-wrap gap-2 text-sm">

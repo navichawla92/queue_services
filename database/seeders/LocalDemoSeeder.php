@@ -9,6 +9,7 @@ use App\Domain\Organization\Models\Employee;
 use App\Domain\Organization\Models\Location;
 use App\Domain\Organization\Models\OpeningHour;
 use App\Domain\Organization\Models\Service;
+use App\Domain\Scheduling\Models\EmployeeSchedule;
 use App\Domain\Tenancy\Models\Plan;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Domain\Tenancy\TenantContext;
@@ -90,6 +91,13 @@ class LocalDemoSeeder extends Seeder
             $employee->update(['default_desk_id' => $desk ? $desks[$desk]->id : null]);
             $employee->departments()->sync(collect($deps)->map(fn ($p) => $departments[$p]->id));
             $employee->services()->sync(collect($skills)->map(fn ($s) => $services[$s]->id));
+
+            // Bookable Mon–Fri 09:00–17:00 for anyone with skills.
+            if ($skills !== [] && ! EmployeeSchedule::query()->where('employee_id', $employee->id)->exists()) {
+                foreach (range(1, 5) as $weekday) {
+                    EmployeeSchedule::create(['employee_id' => $employee->id, 'location_id' => $location->id, 'weekday' => $weekday, 'starts_at' => '09:00', 'ends_at' => '17:00']);
+                }
+            }
         }
     }
 }

@@ -3,7 +3,9 @@
 namespace Tests\Feature\Access;
 
 use App\Domain\Access\Roles;
+use App\Domain\Organization\Models\Employee;
 use App\Domain\Organization\Models\Location;
+use App\Domain\Tenancy\Models\Tenant;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,6 +37,15 @@ class RouteAuthorizationTest extends TestCase
             'admin.home' => ['get', '/admin', Roles::ADMIN_CONSOLE_ROLES],
             'admin.branding' => ['get', '/admin/branding', [Roles::COMPANY_ADMIN]],
             'admin.audit' => ['get', '/admin/audit', [Roles::COMPANY_ADMIN]],
+            'admin.usage' => ['get', '/admin/usage', [Roles::COMPANY_ADMIN]],
+            'admin.usage.export' => ['get', '/admin/usage/export', [Roles::COMPANY_ADMIN]],
+            'admin.reports' => ['get', '/admin/reports', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'admin.reports.export' => ['get', '/admin/reports/export?type=summary&from=2026-01-01&to=2026-01-31', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'admin.overview' => ['get', '/admin/overview', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'admin.operations' => ['get', '/admin/operations', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'admin.feedback' => ['get', '/admin/feedback', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
+            'staff.feedback' => ['get', '/staff/my-feedback', []], // off by default (company setting)
+            'admin.signage' => ['get', '/admin/signage', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
             'admin.devices' => ['get', '/admin/devices', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER]],
             'admin.sms' => ['get', '/admin/sms', [Roles::COMPANY_ADMIN]],
             'admin.sms.log' => ['get', '/admin/sms/log', [Roles::COMPANY_ADMIN]],
@@ -43,10 +54,13 @@ class RouteAuthorizationTest extends TestCase
             'admin.locations.qr' => ['get', '/admin/locations/{location}/qr.svg', Roles::ADMIN_CONSOLE_ROLES],
             'admin.locations.poster' => ['get', '/admin/locations/{location}/poster', Roles::ADMIN_CONSOLE_ROLES],
             'admin.services' => ['get', '/admin/services', Roles::ADMIN_CONSOLE_ROLES],
+            'admin.employees.availability' => ['get', '/admin/employees/{employee}/availability', Roles::ADMIN_CONSOLE_ROLES],
             'admin.employees' => ['get', '/admin/employees', Roles::ADMIN_CONSOLE_ROLES],
             'staff.home' => ['get', '/staff', self::ALL],
             'staff.location.switch' => ['post', '/staff/location/{location}', self::ALL],
             'staff.queue.snapshot' => ['get', '/staff/queue/snapshot', self::ALL],
+            'staff.appointments' => ['get', '/staff/appointments', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER, Roles::RECEPTIONIST]],
+            'staff.availability' => ['get', '/staff/my-availability', self::ALL],
             'staff.checkin' => ['get', '/staff/checkin', [Roles::COMPANY_ADMIN, Roles::LOCATION_MANAGER, Roles::RECEPTIONIST]],
         ];
     }
@@ -78,7 +92,7 @@ class RouteAuthorizationTest extends TestCase
         [$a] = $this->twoTenants();
 
         $location = $this->inTenant($a, fn () => Location::factory()->create());
-        $uri = str_replace('{location}', (string) $location->id, $uri);
+        $uri = $this->fill($uri, $a, $location);
 
         // Guests are sent to sign-in.
         $this->{$method}($uri)->assertRedirect('/login');
@@ -111,9 +125,25 @@ class RouteAuthorizationTest extends TestCase
         [$method, $uri] = self::routeMatrix()[$name];
         [$a] = $this->twoTenants();
         $location = $this->inTenant($a, fn () => Location::factory()->create());
-        $uri = str_replace('{location}', (string) $location->id, $uri);
+        $uri = $this->fill($uri, $a, $location);
 
         $this->actingAs($this->userIn($a))->{$method}($uri)->assertForbidden();
+    }
+
+    /** Replace {location} / {employee} placeholders with records of the tenant. */
+    private function fill(string $uri, Tenant $tenant, Location $location): string
+    {
+        if (str_contains($uri, '{employee}')) {
+            $employee = $this->inTenant($tenant, function () use ($location) {
+                $e = Employee::factory()->create();
+                $e->user->locations()->attach($location);
+
+                return $e;
+            });
+            $uri = str_replace('{employee}', (string) $employee->id, $uri);
+        }
+
+        return str_replace('{location}', (string) $location->id, $uri);
     }
 
     public function test_platform_admin_is_forbidden_from_tenant_routes_without_support_session(): void

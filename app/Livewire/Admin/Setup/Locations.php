@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Setup;
 
 use App\Domain\Access\LocationAccess;
+use App\Domain\Billing\LimitGuard;
 use App\Domain\Organization\Models\Location;
 use App\Domain\Tenancy\TenantContext;
 use App\Livewire\Admin\Concerns\AuthorizesLocations;
@@ -76,6 +77,7 @@ class Locations extends Component
             $location->update($data);
         } else {
             Gate::authorize('locations.manage');
+            app(LimitGuard::class)->assertCanAdd('locations', 'name');
             Location::create($data);
         }
 
@@ -87,6 +89,9 @@ class Locations extends Component
         Gate::authorize('locations.manage');
         $location = Location::query()->findOrFail($id);
         $this->authorizeLocation($location, 'locations.manage');
+        if ($active && ! $location->is_active) {
+            app(LimitGuard::class)->assertCanAdd('locations', 'name');
+        }
         $location->update(['is_active' => $active]);
     }
 

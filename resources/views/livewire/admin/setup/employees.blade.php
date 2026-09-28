@@ -109,6 +109,7 @@
                     <td class="px-3 py-2">{{ $e->user->is_active ? $e->status->label() : __('Deactivated') }}</td>
                     <td class="space-x-3 whitespace-nowrap px-3 py-2 text-right">
                         <button wire:click="edit({{ $e->id }})" class="underline">{{ __('Edit') }}</button>
+                        <a href="{{ route('admin.employees.availability', $e) }}" class="underline">{{ __('Availability') }}</a>
                         @if ($canManageUsers && $e->user_id !== auth()->id())
                             @if ($e->user->is_active)
                                 <button wire:click="setActive({{ $e->id }}, false)" wire:confirm="{{ __('Deactivate this account? They will be signed out immediately.') }}" class="text-red-600">{{ __('Deactivate') }}</button>

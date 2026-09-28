@@ -16,6 +16,8 @@ use App\Domain\Queue\QueueSnapshot;
 use App\Domain\Queue\TicketStateMachine;
 use App\Domain\Queue\TicketStatus;
 use App\Domain\Routing\EligibleEmployees;
+use App\Domain\Scheduling\AppointmentStatus;
+use App\Domain\Scheduling\Models\Appointment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
@@ -282,6 +284,12 @@ class QueueDashboard extends Component
             'employees' => Employee::query()->whereHas('user', fn ($q) => $q->where('is_active', true)->where(fn ($q) => $q->where('all_locations', true)->orWhereHas('locations', fn ($l) => $l->whereKey($location->id))))->orderBy('display_name')->get(),
             'dialogTicket' => $this->dialogTicketId ? Ticket::query()->with('notes.author')->find($this->dialogTicketId) : null,
             'channel' => StaffQueueChanged::channelName($location->tenant_id, $location->id),
+            // Today's appointments still to come or here (appointment-scheduling "Unified operational view").
+            'appointments' => Appointment::query()->with('employee', 'service')
+                ->where('location_id', $location->id)
+                ->whereIn('status', [AppointmentStatus::Booked->value, AppointmentStatus::Confirmed->value, AppointmentStatus::Arrived->value])
+                ->whereBetween('starts_at', [now($location->effectiveTimezone())->startOfDay()->utc(), now($location->effectiveTimezone())->endOfDay()->utc()])
+                ->orderBy('starts_at')->limit(30)->get(),
             'canManage' => $this->user()->can('queue.manage'),
             'canServe' => $this->user()->can('queue.serve'),
         ]);

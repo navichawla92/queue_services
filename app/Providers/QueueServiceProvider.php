@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Analytics\StatsRollup;
 use App\Domain\Queue\Broadcasting\BroadcastQueueChanges;
 use App\Domain\Queue\Events\QueueChanged;
 use App\Domain\Queue\Models\Ticket;
@@ -10,6 +11,7 @@ use App\Domain\Queue\QueueLock;
 use App\Domain\Routing\ServiceTimes;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Domain\Tenancy\PublicIdentifierResolver;
+use App\Domain\Tenancy\Retention;
 use App\Domain\Tenancy\TenantContext;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
@@ -46,6 +48,14 @@ class QueueServiceProvider extends ServiceProvider
 
             $schedule->call(fn () => app(TenantContext::class)->eachActive(fn () => app(QueueHousekeeping::class)->closeout()))
                 ->name('queue:closeout')->everyFifteenMinutes()->withoutOverlapping();
+
+            // Personal-data retention (anonymize after the tenant's retention period).
+            $schedule->call(fn () => app(TenantContext::class)->eachActive(fn () => app(Retention::class)->run()))
+                ->name('privacy:retention')->dailyAt('03:15')->withoutOverlapping();
+
+            // Nightly idempotent rollup of the trailing 7 local days (design Decision 10).
+            $schedule->call(fn () => app(TenantContext::class)->eachActive(fn () => app(StatsRollup::class)->rollupRecent(7)))
+                ->name('analytics:rollup')->dailyAt('02:30')->withoutOverlapping();
         });
     }
 }

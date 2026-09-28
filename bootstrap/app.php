@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Middleware\AuthenticateDevice;
+use App\Http\Middleware\EnsurePlanFeature;
 use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\EnsureTenantMember;
 use App\Http\Middleware\ResolveCurrentLocation;
 use App\Http\Middleware\ResolveTenantFromPublicId;
 use App\Http\Middleware\ResolveTenantFromUser;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -41,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'platform.admin' => EnsurePlatformAdmin::class,
             'location.current' => ResolveCurrentLocation::class,
             'device' => AuthenticateDevice::class,
+            'feature' => EnsurePlanFeature::class,
         ]);
 
         // The tenant must be bound before route-model binding runs, so bound
@@ -48,6 +51,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(SubstituteBindings::class, ResolveTenantFromUser::class);
         $middleware->prependToPriorityList(SubstituteBindings::class, ResolveTenantFromPublicId::class);
         $middleware->prependToPriorityList(SubstituteBindings::class, AuthenticateDevice::class);
+
+        $middleware->web(append: [SecurityHeaders::class]);
 
         // Provider callbacks are authenticated by their signature instead.
         $middleware->validateCsrfTokens(except: ['webhooks/*']);

@@ -18,6 +18,81 @@ const store = {
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
 };
 
+const MANIFEST_POLL_MS = 60000; // digital-signage "Remote publishing": ≤ 60 s
+
+// Cache signage media for playback during short outages.
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/display-sw.js', { scope: '/display/' }).catch(() => {});
+}
+
+/*
+ * Signage player for the split layout's signage zone (digital-signage spec):
+ * rotates the resolved playlist; images/text/QR for their duration, videos
+ * to the end; reloads when the manifest hash changes.
+ */
+Alpine.data('signagePlayer', ({ manifestUrl }) => ({
+    manifest: null,
+    index: 0,
+    timer: null,
+    muted: true,
+
+    init() {
+        this.load();
+        setInterval(() => this.load(), MANIFEST_POLL_MS);
+        // Snapshot carries the manifest hash: reload as soon as it differs.
+        this.$watch('snap.signage', (hash) => { if (hash !== this.manifest?.hash) this.load(); });
+        // A customer call has priority: silence any video while the chime plays.
+        window.addEventListener('display-call', (e) => {
+            const video = this.$root.querySelector('video');
+            if (!video || video.muted) return;
+            video.muted = true;
+            setTimeout(() => { video.muted = this.muted; }, (this.snap?.config.highlight_seconds ?? 10) * 1000);
+        });
+    },
+
+    async load() {
+        try {
+            const res = await fetch(manifestUrl, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+            if (!res.ok) return;
+            const manifest = await res.json();
+            if (manifest.hash === this.manifest?.hash) return;
+            this.manifest = manifest;
+            this.index = 0;
+            this.play();
+        } catch { /* keep playing what we have */ }
+    },
+
+    get item() {
+        return this.manifest?.items?.[this.index] ?? null;
+    },
+
+    play() {
+        clearTimeout(this.timer);
+        const item = this.item;
+        if (!item) return;
+        this.muted = this.needsTap !== false; // sound only after the one-time tap unlocked audio
+        if (item.type === 'video') {
+            this.$nextTick(() => {
+                const video = this.$root.querySelector('video');
+                if (!video) return this.next();
+                video.muted = this.muted;
+                video.play().catch(() => { video.muted = true; video.play().catch(() => this.next()); });
+                // Safety net if "ended" never fires.
+                this.timer = setTimeout(() => this.next(), 10 * 60 * 1000);
+            });
+        } else {
+            this.timer = setTimeout(() => this.next(), (item.duration ?? 10) * 1000);
+        }
+    },
+
+    next() {
+        const count = this.manifest?.items?.length ?? 0;
+        if (count === 0) return;
+        this.index = (this.index + 1) % count;
+        this.play();
+    },
+}));
+
 Alpine.data('lobbyDisplay', ({ snapshotUrl, pairUrl, channelKey }) => ({
     snap: null,
     online: false,

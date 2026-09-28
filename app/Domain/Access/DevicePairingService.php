@@ -4,6 +4,7 @@ namespace App\Domain\Access;
 
 use App\Domain\Access\Models\Device;
 use App\Domain\Access\Models\DevicePairing;
+use App\Domain\Billing\LimitGuard;
 use App\Domain\Display\DisplayChanged;
 use App\Domain\Display\DisplayNotifier;
 use App\Domain\Organization\Models\Location;
@@ -68,6 +69,7 @@ class DevicePairingService
                 throw ValidationException::withMessages(['code' => __('This pairing code is invalid or has expired.')]);
             }
 
+            app(LimitGuard::class)->assertCanAdd('displays', 'code');
             $token = Str::random(64);
 
             $device = new Device(['location_id' => $location->id, 'type' => $pairing->type, 'name' => $name]);

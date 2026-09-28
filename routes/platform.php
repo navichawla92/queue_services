@@ -1,7 +1,7 @@
 <?php
 
-use App\Domain\Tenancy\Models\Tenant;
 use App\Http\Controllers\Platform\SupportSessionController;
+use App\Livewire\Platform\TenantsConsole;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Route;
 | The only place tenant scoping may be bypassed (audited).
 */
 
-Route::get('/', fn () => view('platform.home', [
-    'tenants' => Tenant::query()->with('plan')->orderBy('name')->get(),
-]))->name('home');
+Route::get('/', TenantsConsole::class)->name('home');
 
 Route::post('/tenants/{tenant}/support', [SupportSessionController::class, 'store'])->name('support.start');
 Route::delete('/support', [SupportSessionController::class, 'destroy'])->name('support.end');

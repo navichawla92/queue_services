@@ -2,6 +2,7 @@
 
 namespace App\Domain\Scheduling;
 
+use App\Domain\Billing\Usage;
 use App\Domain\Organization\Models\Employee;
 use App\Domain\Queue\Models\Customer;
 use App\Domain\Scheduling\Exceptions\BookingNotAllowedException;
@@ -55,6 +56,7 @@ class AppointmentBooking
             ]);
         });
 
+        app(Usage::class)->increment('appointments');
         DB::afterCommit(fn () => $this->notifier->confirmed($appointment));
 
         return $appointment;
@@ -142,15 +144,51 @@ class AppointmentBooking
         // Serialize concurrent bookings touching these employees.
         Employee::query()->whereIn('id', $slot->employeeIds)->orderBy('id')->lockForUpdate()->get();
 
-        $recheck = $this->slots->find($request->location, $request->service, $request->start, $request->employee, $enforceWindow, $ignoreAppointmentId);
-        if ($recheck === null) {
+        // Re-check with LOCKING reads: under REPEATABLE READ a plain read would
+        // still see this transaction's earlier snapshot and miss a booking the
+        // other request just committed.
+        $free = $this->freeEmployees($slot, $ignoreAppointmentId);
+        if ($free === [] || ! $this->withinCapacity($request, $slot, $ignoreAppointmentId)) {
             if ($staffOverride) {
                 return $request->employee?->id;
             }
             throw new SlotUnavailableException;
         }
 
-        return $request->employee?->id ?? $this->leastBooked($recheck->employeeIds, $recheck->start);
+        return $request->employee->id ?? $this->leastBooked($free, $slot->start);
+    }
+
+    /** @return list<int> employees of the slot with no (latest committed) overlapping appointment */
+    private function freeEmployees(Slot $slot, ?int $ignoreAppointmentId): array
+    {
+        $busy = Appointment::query()->occupying()
+            ->whereIn('employee_id', $slot->employeeIds)
+            ->where('starts_at', '<', $slot->end->utc())
+            ->where('ends_at', '>', $slot->start->utc())
+            ->when($ignoreAppointmentId, fn ($q) => $q->where('id', '!=', $ignoreAppointmentId))
+            ->lockForUpdate()
+            ->pluck('employee_id')->all();
+
+        return array_values(array_diff($slot->employeeIds, $busy));
+    }
+
+    private function withinCapacity(BookingRequest $request, Slot $slot, ?int $ignoreAppointmentId): bool
+    {
+        $cap = $request->location->appointment_capacity_per_hour;
+        if ($cap === null) {
+            return true;
+        }
+
+        $hourStart = $slot->start->setTimezone($request->location->effectiveTimezone())->startOfHour();
+        $count = Appointment::query()->occupying()
+            ->where('location_id', $request->location->id)
+            ->where('starts_at', '>=', $hourStart->utc())
+            ->where('starts_at', '<', $hourStart->addHour()->utc())
+            ->when($ignoreAppointmentId, fn ($q) => $q->where('id', '!=', $ignoreAppointmentId))
+            ->lockForUpdate()
+            ->count();
+
+        return $count < $cap;
     }
 
     /** @param  list<int>  $employeeIds */

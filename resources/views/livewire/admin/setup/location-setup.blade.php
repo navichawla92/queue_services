@@ -14,8 +14,10 @@
             'routing' => __('Routing rules'),
             'hours' => __('Opening hours'),
             'closures' => __('Closures & holidays'),
+            'booking' => __('Online booking'),
             'qr' => __('Check-in QR'),
         ] as $key => $label)
+            @if ($key === 'booking' && ! app(\App\Domain\Billing\Features::class)->enabled('appointments')) @continue @endif
             <button wire:click="$set('tab', '{{ $key }}')" @class([
                 'px-3 py-2 text-sm -mb-px border-b-2',
                 'border-slate-900 font-semibold' => $tab === $key,
@@ -31,6 +33,7 @@
         @case('routing') <livewire:admin.setup.routing-rules-editor :location-id="$location->id" :key="'rr-'.$location->id" /> @break
         @case('hours') <livewire:admin.setup.hours-editor :location-id="$location->id" :key="'hrs-'.$location->id" /> @break
         @case('closures') <livewire:admin.setup.closures-editor :location-id="$location->id" :key="'clo-'.$location->id" /> @break
+        @case('booking') <livewire:admin.setup.booking-settings-editor :location-id="$location->id" :key="'bk-'.$location->id" /> @break
         @case('qr')
             <div class="rounded-lg bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-600">{{ __('Customers scan this code to check in on their phone:') }}</p>

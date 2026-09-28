@@ -7,7 +7,9 @@ use App\Domain\Access\DeviceContext;
 use App\Domain\Access\LocationAccess;
 use App\Domain\Access\Roles;
 use App\Domain\Access\SupportSession;
+use App\Domain\Billing\Features;
 use App\Domain\Organization\Models\Location;
+use App\Domain\Signage\SignagePublisher;
 use App\Http\Middleware\AuthenticateDevice;
 use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\EnsureTenantMember;
@@ -18,6 +20,7 @@ use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(LocationAccess::class);
         $this->app->scoped(CurrentLocation::class);
         $this->app->scoped(DeviceContext::class);
+        $this->app->scoped(SignagePublisher::class);
     }
 
     /**
@@ -60,6 +64,9 @@ class AppServiceProvider extends ServiceProvider
             ResolveCurrentLocation::class,
             ThrottleRequests::class,
         ]);
+
+        // @feature('signage') … @endfeature — plan feature gating in views.
+        Blade::if('feature', fn (string $feature) => app(Features::class)->enabled($feature));
 
         // Public self-service endpoints (check-in, booking, feedback).
         RateLimiter::for('checkin', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));

@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\PublicSite\AppointmentCheckinController;
 use App\Http\Controllers\PublicSite\TwilioWebhookController;
+use App\Livewire\PublicSite\BookingPage;
+use App\Livewire\PublicSite\FeedbackForm;
+use App\Livewire\PublicSite\ManageAppointment;
 use App\Livewire\PublicSite\MobileCheckin;
 use App\Livewire\PublicSite\TicketStatusPage;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +23,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['tenant.public:location', 'throttle:checkin'])->group(function () {
     Route::get('/c/{location}', MobileCheckin::class)->name('checkin');
+    Route::get('/book/{location}', BookingPage::class)->middleware('feature:appointments')->name('book');
+});
+
+Route::middleware(['tenant.public:appointment', 'throttle:checkin', 'feature:appointments'])->group(function () {
+    Route::get('/a/{appointment}', ManageAppointment::class)->name('appointment');
+    Route::get('/a/{appointment}/checkin', AppointmentCheckinController::class)->name('appointment.checkin');
+});
+
+Route::middleware(['tenant.public:feedback', 'throttle:checkin', 'feature:feedback'])->group(function () {
+    Route::get('/f/{feedback}', FeedbackForm::class)->name('feedback');
 });
 
 Route::middleware('tenant.public:ticket')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Queue;
 
+use App\Domain\Billing\Usage;
 use App\Domain\Queue\Exceptions\DuplicateCheckinException;
 use App\Domain\Queue\Exceptions\UnroutableServiceException;
 use App\Domain\Queue\Models\Customer;
@@ -89,6 +90,7 @@ class IssueTicket
                 'created_at' => $now,
             ]);
             $this->lock->changed($location->id, 'created', $ticket->id);
+            app(Usage::class)->increment('tickets');
 
             return $ticket;
         });

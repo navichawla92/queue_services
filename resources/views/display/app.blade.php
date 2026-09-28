@@ -99,7 +99,42 @@
 
                 {{-- Signage zone (digital signage player mounts here) --}}
                 <section x-show="snap.config.layout === 'split'" id="signage-zone" class="relative min-h-0 overflow-hidden rounded-2xl bg-black"
-                         data-testid="signage-zone"></section>
+                         data-testid="signage-zone"
+                         x-data="signagePlayer({ manifestUrl: @js(route('display.signage')) })">
+                    <template x-if="item">
+                        <div class="absolute inset-0 flex items-center justify-center" :key="item.key">
+                            <template x-if="item.type === 'image'"><img :src="item.media" :alt="item.title" class="h-full w-full object-contain"></template>
+                            <template x-if="item.type === 'video'"><video :src="item.media" class="h-full w-full object-contain" playsinline x-on:ended="next()" x-on:error="next()"></video></template>
+                            <template x-if="item.type === 'announcement'">
+                                <div class="p-[4vmin] text-center">
+                                    <p class="fs-lg font-bold" x-text="item.title"></p>
+                                    <p class="fs-md mt-[2vmin] whitespace-pre-line text-white/80" x-text="item.text"></p>
+                                </div>
+                            </template>
+                            <template x-if="item.type === 'rich_text'">
+                                {{-- html is server-rendered Markdown with raw HTML stripped --}}
+                                <div class="fs-md max-w-none p-[4vmin] [&_h1]:fs-lg [&_h1]:font-bold [&_li]:list-disc [&_ul]:ml-[3vmin]" x-html="item.html"></div>
+                            </template>
+                            <template x-if="item.type === 'qr'">
+                                <div class="flex flex-col items-center gap-[2vmin] p-[3vmin] text-center">
+                                    <p class="fs-lg font-bold" x-text="item.title"></p>
+                                    <img :src="item.qr" alt="" class="h-[45vmin] w-[45vmin] rounded-xl bg-white p-[1.5vmin]">
+                                    <p class="fs-md text-white/80" x-text="item.text"></p>
+                                </div>
+                            </template>
+                            <template x-if="item.type === 'service_info'">
+                                <div class="w-full p-[4vmin]">
+                                    <p class="fs-lg mb-[2vmin] font-bold" x-text="item.title"></p>
+                                    <ul class="fs-md space-y-[1vmin]">
+                                        <template x-for="s in item.services" :key="s.name">
+                                            <li><span class="font-semibold" x-text="s.name"></span> <span class="fs-sm text-white/60" x-text="s.description || ''"></span></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </section>
             </main>
 
             {{-- Ticker --}}

@@ -80,6 +80,7 @@ class QueueNotifications
         }
 
         $settings = $this->config->settings($location->id);
+        $estimates = $this->positions->estimateMany($location); // one pass for the whole queue
 
         Ticket::query()->with(['location', 'department', 'service', 'desk'])
             ->where('location_id', $location->id)
@@ -87,8 +88,11 @@ class QueueNotifications
             ->where('sms_consent', true)
             ->whereNotNull('customer_phone')
             ->when($skipTicketIds !== [], fn ($q) => $q->whereNotIn('id', $skipTicketIds))
-            ->each(function (Ticket $ticket) use ($wantNext, $wantPosition, $wantWait, $settings) {
-                $estimate = $this->positions->estimate($ticket);
+            ->each(function (Ticket $ticket) use ($wantNext, $wantPosition, $wantWait, $settings, $estimates) {
+                $estimate = $estimates[$ticket->id] ?? null;
+                if ($estimate === null) {
+                    return;
+                }
 
                 $startedAt = $ticket->initial_ahead + 1;
                 if ($wantNext && $estimate['position'] === 1 && $startedAt > 1) {

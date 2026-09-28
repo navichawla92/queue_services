@@ -3,15 +3,15 @@
 namespace App\Domain\Notifications\Jobs;
 
 use App\Domain\Notifications\Models\SmsMessage;
-use App\Domain\Notifications\NotificationEvent;
-use App\Domain\Scheduling\Models\Appointment;
 use App\Domain\Notifications\Models\SmsOptOut;
+use App\Domain\Notifications\NotificationEvent;
 use App\Domain\Notifications\Providers\SmsPermanentException;
 use App\Domain\Notifications\Providers\SmsTransientException;
 use App\Domain\Notifications\SmsAllowance;
 use App\Domain\Notifications\SmsConfig;
 use App\Domain\Queue\Models\Ticket;
 use App\Domain\Queue\TicketStatus;
+use App\Domain\Scheduling\Models\Appointment;
 use App\Domain\Tenancy\TenantContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

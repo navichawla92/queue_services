@@ -15,7 +15,31 @@
             <h1 class="{{ $big ? 'text-5xl' : 'text-3xl' }} font-bold">{{ __('Welcome') }}</h1>
             <p class="{{ $label }} text-slate-600">{{ $location->name }}</p>
             <button wire:click="begin" class="{{ $btn }} w-full rounded-xl bg-[var(--brand)] font-semibold text-white">{{ __('Check in') }}</button>
+            @feature('appointments')
+                <button wire:click="haveAppointment" class="{{ $btn }} w-full rounded-xl border-2 border-[var(--brand)] font-semibold" data-testid="have-appointment">{{ __('I have an appointment') }}</button>
+            @endfeature
         </div>
+        @break
+
+    @case('appointment')
+        <h1 class="{{ $big ? 'text-4xl' : 'text-2xl' }} mb-6 font-bold">{{ __('Welcome back!') }}</h1>
+        <form wire:submit="submitAppointment" class="space-y-5">
+            <div>
+                <label for="ci-lookup" class="{{ $label }} block font-medium">{{ __('Mobile number or confirmation code') }}</label>
+                <input id="ci-lookup" wire:model="lookup" autocomplete="off" class="{{ $input }} mt-1 w-full rounded-xl border border-slate-300">
+                @error('lookup') <p class="mt-1 text-red-600">{{ $message }}</p> @enderror
+            </div>
+            @if ($appointmentNotFound)
+                <div class="rounded-xl bg-amber-50 p-4" data-testid="appointment-not-found">
+                    <p class="{{ $label }}">{{ __("We couldn't find an appointment for today.") }}</p>
+                    <button type="button" wire:click="begin" class="{{ $btn }} mt-3 w-full rounded-xl bg-[var(--brand)] font-semibold text-white">{{ __('Check in as a walk-in') }}</button>
+                </div>
+            @endif
+            <div class="flex gap-3">
+                <button type="button" wire:click="back" class="{{ $btn }} rounded-xl border border-slate-300">{{ __('Back') }}</button>
+                <button type="submit" class="{{ $btn }} flex-1 rounded-xl bg-[var(--brand)] font-semibold text-white">{{ __('Find my appointment') }}</button>
+            </div>
+        </form>
         @break
 
     @case('closed')
@@ -23,6 +47,9 @@
             <h1 class="{{ $big ? 'text-4xl' : 'text-2xl' }} font-bold">{{ $location->is_active ? __('We are not accepting walk-ins right now.') : __('This location is not currently accepting customers.') }}</h1>
             @if ($nextOpening)
                 <p class="{{ $label }}">{{ __('We open again :when.', ['when' => $nextOpening->locale(app()->getLocale())->isoFormat('dddd, LT')]) }}</p>
+            @endif
+            @if ($location->is_active && app(\App\Domain\Billing\Features::class)->enabled('appointments'))
+                <button wire:click="haveAppointment" class="{{ $btn }} w-full rounded-xl border-2 border-[var(--brand)] font-semibold">{{ __('I have an appointment') }}</button>
             @endif
             <button wire:click="startOver" class="{{ $btn }} rounded-xl border border-slate-300">{{ __('Back') }}</button>
         </div>
