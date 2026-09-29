@@ -1,11 +1,11 @@
 @php $fmt = fn ($v, $s = '') => $v === null ? '—' : $v.$s; @endphp
 <div class="space-y-6" data-testid="overview">
-    <h1 class="text-2xl font-semibold">{{ __('All locations') }}</h1>
+    <h1 class="page-title">{{ __('All locations') }}</h1>
     @include('livewire.admin.reports.partials.filters')
 
-    <div class="overflow-x-auto rounded-lg bg-white shadow-sm">
-        <table class="min-w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+    <div class="overflow-x-auto card">
+        <table class="data-table">
+            <thead>
                 <tr>
                     <th class="px-3 py-2">{{ __('Location') }}</th>
                     <th class="px-3 py-2">{{ __('Waiting now') }}</th>
@@ -32,7 +32,7 @@
                         <td class="px-3 py-2">{{ $fmt($r['kpi']['no_show_rate'], '%') }}</td>
                         <td class="px-3 py-2">{{ $fmt($r['kpi']['satisfaction']) }}</td>
                         <td class="whitespace-nowrap px-3 py-2 text-right">
-                            <a href="{{ route('admin.reports', ['location' => $r['location']->id, 'from' => $from, 'to' => $to]) }}" class="underline">{{ __('Details') }}</a>
+                            <a href="{{ route('admin.reports', ['location' => $r['location']->id, 'from' => $from, 'to' => $to]) }}" class="link">{{ __('Details') }}</a>
                         </td>
                     </tr>
                 @endforeach

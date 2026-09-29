@@ -1,8 +1,8 @@
 <div class="space-y-6">
-    <h1 class="text-2xl font-semibold">{{ __('Kiosks & lobby displays') }}</h1>
+    <h1 class="page-title">{{ __('Kiosks & lobby displays') }}</h1>
 
     @can('tenant.manage')
-        <label class="flex items-center gap-2 rounded-lg bg-white p-4 text-sm shadow-sm">
+        <label class="flex items-center gap-2 card p-4 text-sm">
             <input type="checkbox" wire:model.live="showNames">
             {{ __('Show customers as "First name + last initial" on lobby displays (company-wide). Off: ticket numbers only. Full names are never shown.') }}
         </label>
@@ -12,28 +12,28 @@
         <form wire:submit="saveConfig" class="grid gap-4 rounded-lg border-2 border-slate-900 bg-white p-6 shadow-sm sm:grid-cols-3" data-testid="display-config">
             <h2 class="text-lg font-semibold sm:col-span-3">{{ __('Display settings: :name', ['name' => $configuring->name]) }}</h2>
             <div>
-                <label class="block text-sm font-medium" for="cfg-layout">{{ __('Layout') }}</label>
-                <select id="cfg-layout" wire:model="config.layout" class="mt-1 w-full rounded border border-slate-300 px-2 py-2">
+                <label class="form-label" for="cfg-layout">{{ __('Layout') }}</label>
+                <select id="cfg-layout" wire:model="config.layout" class="input mt-1 w-full">
                     <option value="queue">{{ __('Queue only (full screen)') }}</option>
                     <option value="split">{{ __('Split: queue + signage') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium" for="cfg-orient">{{ __('Orientation') }}</label>
-                <select id="cfg-orient" wire:model="config.orientation" class="mt-1 w-full rounded border border-slate-300 px-2 py-2">
+                <label class="form-label" for="cfg-orient">{{ __('Orientation') }}</label>
+                <select id="cfg-orient" wire:model="config.orientation" class="input mt-1 w-full">
                     <option value="landscape">{{ __('Landscape') }}</option>
                     <option value="portrait">{{ __('Portrait') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium" for="cfg-zone">{{ __('Queue zone (split)') }}</label>
-                <select id="cfg-zone" wire:model="config.queue_zone" class="mt-1 w-full rounded border border-slate-300 px-2 py-2">
+                <label class="form-label" for="cfg-zone">{{ __('Queue zone (split)') }}</label>
+                <select id="cfg-zone" wire:model="config.queue_zone" class="input mt-1 w-full">
                     <option value="left">{{ __('Left / top') }}</option>
                     <option value="right">{{ __('Right') }}</option>
                 </select>
             </div>
             <div class="sm:col-span-3">
-                <span class="block text-sm font-medium">{{ __('Departments shown (none = all)') }}</span>
+                <span class="form-label">{{ __('Departments shown (none = all)') }}</span>
                 <div class="mt-1 flex flex-wrap gap-4 text-sm">
                     @foreach ($configDepartments as $d)
                         <label class="flex items-center gap-1"><input type="checkbox" value="{{ $d->id }}" wire:model="config.department_ids"> {{ $d->name }}</label>
@@ -41,13 +41,13 @@
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium" for="cfg-rows">{{ __('Waiting rows') }}</label>
-                <input id="cfg-rows" type="number" min="0" max="30" wire:model="config.waiting_rows" class="mt-1 w-full rounded border border-slate-300 px-2 py-2">
+                <label class="form-label" for="cfg-rows">{{ __('Waiting rows') }}</label>
+                <input id="cfg-rows" type="number" min="0" max="30" wire:model="config.waiting_rows" class="input mt-1 w-full">
                 @error('config.waiting_rows') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="block text-sm font-medium" for="cfg-hl">{{ __('Call highlight (seconds)') }}</label>
-                <input id="cfg-hl" type="number" min="3" max="60" wire:model="config.highlight_seconds" class="mt-1 w-full rounded border border-slate-300 px-2 py-2">
+                <label class="form-label" for="cfg-hl">{{ __('Call highlight (seconds)') }}</label>
+                <input id="cfg-hl" type="number" min="3" max="60" wire:model="config.highlight_seconds" class="input mt-1 w-full">
                 @error('config.highlight_seconds') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="space-y-1 text-sm">
@@ -58,46 +58,46 @@
                 <label class="flex items-center gap-2"><input type="checkbox" wire:model="config.ticker"> {{ __('Scrolling ticker') }}</label>
             </div>
             <div class="flex gap-3 sm:col-span-3">
-                <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">{{ __('Save — applies to the TV within seconds') }}</button>
-                <button type="button" wire:click="$set('configuringId', null)" class="px-4 py-2">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Save — applies to the TV within seconds') }}</button>
+                <button type="button" wire:click="$set('configuringId', null)" class="btn btn-ghost">{{ __('Cancel') }}</button>
             </div>
         </form>
     @endif
 
-    <form wire:submit="pair" class="grid gap-4 rounded-lg bg-white p-6 shadow-sm sm:grid-cols-4">
+    <form wire:submit="pair" class="grid gap-4 card p-6 sm:grid-cols-4">
         <p class="sm:col-span-4 text-sm text-slate-600">
             {{ __('Open :display (TV) or :kiosk (tablet) on the device, then enter the code it shows.', ['display' => url('/display'), 'kiosk' => url('/kiosk')]) }}
         </p>
         <div>
-            <label class="block text-sm font-medium" for="code">{{ __('Pairing code') }}</label>
-            <input id="code" wire:model="code" maxlength="6" class="mt-1 w-full rounded border border-slate-300 px-3 py-2 font-mono uppercase">
-            @error('code') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <label class="form-label" for="code">{{ __('Pairing code') }}</label>
+            <input id="code" wire:model="code" maxlength="6" class="input mt-1 w-full font-mono uppercase">
+            @error('code') <p class="field-error">{{ $message }}</p> @enderror
         </div>
         <div>
-            <label class="block text-sm font-medium" for="location_id">{{ __('Location') }}</label>
-            <select id="location_id" wire:model="location_id" class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
+            <label class="form-label" for="location_id">{{ __('Location') }}</label>
+            <select id="location_id" wire:model="location_id" class="input mt-1 w-full">
                 @foreach ($locations as $loc)
                     <option value="{{ $loc->id }}">{{ $loc->name }}</option>
                 @endforeach
             </select>
-            @error('location_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            @error('location_id') <p class="field-error">{{ $message }}</p> @enderror
         </div>
         <div>
-            <label class="block text-sm font-medium" for="name">{{ __('Name') }}</label>
-            <input id="name" wire:model="name" placeholder="{{ __('e.g. Lobby TV 1') }}" class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
-            @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <label class="form-label" for="name">{{ __('Name') }}</label>
+            <input id="name" wire:model="name" placeholder="{{ __('e.g. Lobby TV 1') }}" class="input mt-1 w-full">
+            @error('name') <p class="field-error">{{ $message }}</p> @enderror
         </div>
         <div class="flex items-end">
-            <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">{{ __('Pair device') }}</button>
+            <button type="submit" class="btn btn-primary">{{ __('Pair device') }}</button>
         </div>
         @if ($pairedMessage)
             <p class="sm:col-span-4 text-sm text-green-700">{{ $pairedMessage }}</p>
         @endif
     </form>
 
-    <div class="overflow-x-auto rounded-lg bg-white shadow-sm">
-        <table class="min-w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+    <div class="overflow-x-auto card">
+        <table class="data-table">
+            <thead>
                 <tr>
                     <th class="px-3 py-2">{{ __('Name') }}</th>
                     <th class="px-3 py-2">{{ __('Type') }}</th>

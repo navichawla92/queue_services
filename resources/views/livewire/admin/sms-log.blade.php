@@ -1,25 +1,25 @@
 <div class="space-y-4">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold">{{ __('SMS message log') }}</h1>
-        <a href="{{ route('admin.sms') }}" class="underline">{{ __('SMS settings') }}</a>
+        <h1 class="page-title">{{ __('SMS message log') }}</h1>
+        <a href="{{ route('admin.sms') }}" class="link">{{ __('SMS settings') }}</a>
     </div>
 
-    <div class="flex flex-wrap gap-3 rounded-lg bg-white p-3 text-sm shadow-sm">
-        <select wire:model.live="status" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Status') }}">
+    <div class="flex flex-wrap gap-3 card p-3 text-sm">
+        <select wire:model.live="status" class="input input-sm" aria-label="{{ __('Status') }}">
             <option value="">{{ __('All statuses') }}</option>
             @foreach ($statuses as $s) <option value="{{ $s }}">{{ ucfirst($s) }}</option> @endforeach
         </select>
-        <select wire:model.live="event" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Event') }}">
+        <select wire:model.live="event" class="input input-sm" aria-label="{{ __('Event') }}">
             <option value="">{{ __('All events') }}</option>
             @foreach ($events as $e) <option value="{{ $e->value }}">{{ $e->label() }}</option> @endforeach
         </select>
-        <label>{{ __('From') }} <input type="date" wire:model.live="from" class="rounded border border-slate-300 px-2 py-1"></label>
-        <label>{{ __('To') }} <input type="date" wire:model.live="to" class="rounded border border-slate-300 px-2 py-1"></label>
+        <label>{{ __('From') }} <input type="date" wire:model.live="from" class="input input-sm"></label>
+        <label>{{ __('To') }} <input type="date" wire:model.live="to" class="input input-sm"></label>
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-white shadow-sm">
-        <table class="min-w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+    <div class="overflow-x-auto card">
+        <table class="data-table">
+            <thead>
                 <tr>
                     <th class="px-3 py-2">{{ __('When (UTC)') }}</th>
                     <th class="px-3 py-2">{{ __('To') }}</th>

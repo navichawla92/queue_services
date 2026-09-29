@@ -1,8 +1,8 @@
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold">{{ __('Services') }}</h1>
+        <h1 class="page-title">{{ __('Services') }}</h1>
         @if ($canEdit)
-            <button wire:click="create" class="rounded bg-slate-900 px-4 py-2 text-white">{{ __('New service') }}</button>
+            <button wire:click="create" class="btn btn-primary">{{ __('New service') }}</button>
         @endif
     </div>
     @unless ($canEdit)
@@ -10,27 +10,27 @@
     @endunless
 
     @if ($editingId !== null)
-        <form wire:submit="save" class="grid gap-4 rounded-lg bg-white p-6 shadow-sm sm:grid-cols-2">
+        <form wire:submit="save" class="grid gap-4 card p-6 sm:grid-cols-2">
             <div>
-                <label class="block text-sm font-medium" for="svc-name">{{ __('Name') }}</label>
-                <input id="svc-name" wire:model="name" class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
-                @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                <label class="form-label" for="svc-name">{{ __('Name') }}</label>
+                <input id="svc-name" wire:model="name" class="input mt-1 w-full">
+                @error('name') <p class="field-error">{{ $message }}</p> @enderror
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium" for="svc-min">{{ __('Expected duration (min)') }}</label>
-                    <input id="svc-min" type="number" min="1" max="480" wire:model="expected_minutes" class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
-                    @error('expected_minutes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    <label class="form-label" for="svc-min">{{ __('Expected duration (min)') }}</label>
+                    <input id="svc-min" type="number" min="1" max="480" wire:model="expected_minutes" class="input mt-1 w-full">
+                    @error('expected_minutes') <p class="field-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium" for="svc-sort">{{ __('Order') }}</label>
-                    <input id="svc-sort" type="number" min="0" wire:model="sort_order" class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
+                    <label class="form-label" for="svc-sort">{{ __('Order') }}</label>
+                    <input id="svc-sort" type="number" min="0" wire:model="sort_order" class="input mt-1 w-full">
                 </div>
             </div>
             <div class="sm:col-span-2">
-                <label class="block text-sm font-medium" for="svc-desc">{{ __('Description (shown to customers)') }}</label>
-                <textarea id="svc-desc" wire:model="description" rows="2" class="mt-1 w-full rounded border border-slate-300 px-3 py-2"></textarea>
-                @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                <label class="form-label" for="svc-desc">{{ __('Description (shown to customers)') }}</label>
+                <textarea id="svc-desc" wire:model="description" rows="2" class="input mt-1 w-full"></textarea>
+                @error('description') <p class="field-error">{{ $message }}</p> @enderror
             </div>
             <div class="space-y-1 text-sm sm:col-span-2">
                 <label class="flex items-center gap-2"><input type="checkbox" wire:model="allow_walk_in"> {{ __('Available for walk-ins') }}</label>
@@ -39,14 +39,14 @@
                 @error('allow_walk_in') <p class="text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="flex gap-3 sm:col-span-2">
-                <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">{{ __('Save') }}</button>
-                <button type="button" wire:click="cancel" class="rounded px-4 py-2">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                <button type="button" wire:click="cancel" class="btn btn-ghost">{{ __('Cancel') }}</button>
             </div>
         </form>
     @endif
 
-    <table class="min-w-full rounded-lg bg-white text-sm shadow-sm">
-        <thead class="bg-slate-50 text-left text-slate-500">
+    <table class="data-table rounded-xl bg-white shadow-sm ring-1 ring-slate-200/80">
+        <thead>
             <tr>
                 <th class="px-3 py-2">{{ __('Service') }}</th>
                 <th class="px-3 py-2">{{ __('Duration') }}</th>
@@ -67,7 +67,7 @@
                     <td class="px-3 py-2">{{ $s->locations_count }}</td>
                     <td class="space-x-3 px-3 py-2 text-right">
                         @if ($canEdit)
-                            <button wire:click="edit({{ $s->id }})" class="underline">{{ __('Edit') }}</button>
+                            <button wire:click="edit({{ $s->id }})" class="link">{{ __('Edit') }}</button>
                             <button wire:click="setActive({{ $s->id }}, {{ $s->is_active ? 'false' : 'true' }})" class="{{ $s->is_active ? 'text-red-600' : 'text-green-700' }}">
                                 {{ $s->is_active ? __('Deactivate') : __('Reactivate') }}
                             </button>

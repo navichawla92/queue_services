@@ -1,6 +1,6 @@
 <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm" data-testid="manage-appointment">
     <h1 class="text-2xl font-bold">{{ __('Your appointment') }}</h1>
-    @if ($message) <p class="rounded bg-green-50 p-3 text-green-800">{{ $message }}</p> @endif
+    @if ($message) <p class="alert-success">{{ $message }}</p> @endif
     @if ($error) <p class="rounded bg-amber-100 p-3 text-amber-900" role="alert">{{ $error }}</p> @endif
 
     <dl class="grid grid-cols-3 gap-2">
@@ -19,7 +19,7 @@
         @if ($rescheduling)
             <div class="space-y-3">
                 <label class="block font-medium" for="m-date">{{ __('New date') }}</label>
-                <input id="m-date" type="date" wire:model.live="date" class="rounded border border-slate-300 px-3 py-2">
+                <input id="m-date" type="date" wire:model.live="date" class="input">
                 <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
                     @forelse ($slots as $s)
                         <button wire:click="reschedule('{{ $s->key() }}')" class="rounded-lg border border-slate-200 px-2 py-2">{{ $s->start->setTimezone($tz)->isoFormat('h:mm A') }}</button>

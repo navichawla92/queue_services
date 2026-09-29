@@ -3,8 +3,8 @@
         <p class="rounded bg-amber-50 p-4 text-sm text-amber-800">{{ __('Add a department first: each offered service is routed to a department of this location.') }}</p>
     @endif
 
-    <table class="min-w-full rounded-lg bg-white text-sm shadow-sm">
-        <thead class="bg-slate-50 text-left text-slate-500">
+    <table class="data-table rounded-xl bg-white shadow-sm ring-1 ring-slate-200/80">
+        <thead>
             <tr>
                 <th class="px-3 py-2">{{ __('Service') }}</th>
                 <th class="px-3 py-2">{{ __('Offered here → default department') }}</th>
@@ -19,11 +19,11 @@
                         @unless ($service->customer_selectable) <span class="ml-1 text-xs text-slate-500">({{ __('staff only') }})</span> @endunless
                     </td>
                     <td class="px-3 py-2">
-                        <select wire:model="offered.{{ $service->id }}" class="rounded border border-slate-300 px-2 py-1">
+                        <select wire:model="offered.{{ $service->id }}" class="input input-sm">
                             <option value="">{{ __('Not offered') }}</option>
                             @foreach ($departments as $d) <option value="{{ $d->id }}">{{ $d->name }}</option> @endforeach
                         </select>
-                        @error('offered.'.$service->id) <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('offered.'.$service->id) <p class="field-error">{{ $message }}</p> @enderror
                     </td>
                     <td class="px-3 py-2 text-slate-600">
                         {{ $service->allow_walk_in ? __('Walk-in') : '' }}{{ $service->allow_walk_in && $service->allow_appointment ? ' · ' : '' }}{{ $service->allow_appointment ? __('Appointment') : '' }}
@@ -36,7 +36,7 @@
     </table>
 
     <div class="flex items-center gap-3">
-        <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">{{ __('Save') }}</button>
+        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
         @if ($saved) <span class="text-sm text-green-700">{{ __('Saved.') }}</span> @endif
     </div>
 </form>

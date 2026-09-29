@@ -1,5 +1,5 @@
 <div wire:poll.10s class="space-y-6" data-testid="operations">
-    <h1 class="text-2xl font-semibold">{{ __('Live operations') }} <span class="text-base font-normal text-slate-500">· {{ $location->name }}</span></h1>
+    <h1 class="page-title">{{ __('Live operations') }} <span class="text-base font-normal text-slate-500">· {{ $location->name }}</span></h1>
 
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         @foreach ([
@@ -9,11 +9,11 @@
             [__('Being served'), $inService],
             [__('Served today'), $servedToday],
         ] as [$label, $value])
-            <div class="rounded-lg bg-white p-4 shadow-sm"><div class="text-sm text-slate-500">{{ $label }}</div><div class="text-2xl font-semibold">{{ $value }}</div></div>
+            <div class="card p-4"><div class="text-sm text-slate-500">{{ $label }}</div><div class="text-2xl font-semibold">{{ $value }}</div></div>
         @endforeach
     </div>
 
-    <section class="rounded-lg bg-white p-4 shadow-sm">
+    <section class="card p-4">
         <h2 class="mb-2 font-semibold">{{ __('Waiting longer than :min min', ['min' => $slaMinutes]) }} <span class="text-slate-400">({{ $breaches->count() }})</span></h2>
         <ul class="space-y-1 text-sm" data-testid="sla-breaches">
             @forelse ($breaches as $t)
@@ -24,7 +24,7 @@
         </ul>
     </section>
 
-    <section class="rounded-lg bg-white p-4 shadow-sm">
+    <section class="card p-4">
         <h2 class="mb-2 font-semibold">{{ __('Staff') }} <span class="text-sm font-normal text-slate-500">· {{ trans_choice(':count assigned person offline|:count assigned people offline', $offline, ['count' => $offline]) }}</span></h2>
         <div class="flex flex-wrap gap-2 text-sm">
             @forelse ($staff as $s)

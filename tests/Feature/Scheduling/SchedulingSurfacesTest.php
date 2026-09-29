@@ -152,6 +152,18 @@ class SchedulingSurfacesTest extends TestCase
         $this->assertSame($rita->id, Appointment::query()->sole()->created_by);
     }
 
+    public function test_my_availability_menu_link_follows_company_setting(): void
+    {
+        $maria = $this->scheduledEmployee();
+        $maria->user->assignRole(Roles::EMPLOYEE);
+        $this->actingAs($maria->user);
+
+        $this->get('/staff')->assertOk()->assertDontSee(route('staff.availability'));
+
+        $this->tenant->forceFill(['settings' => array_merge($this->tenant->settings, ['employees_edit_own_schedule' => true])])->save();
+        $this->get('/staff')->assertOk()->assertSee(route('staff.availability'));
+    }
+
     public function test_employee_availability_permissions(): void
     {
         $maria = $this->scheduledEmployee();

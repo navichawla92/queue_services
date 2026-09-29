@@ -8,4 +8,127 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-brand-50: oklch(0.962 0.018 272.3);
+    --color-brand-100: oklch(0.93 0.034 272.8);
+    --color-brand-500: oklch(0.585 0.233 277.1);
+    --color-brand-600: oklch(0.511 0.262 276.97);
+    --color-brand-700: oklch(0.457 0.24 277.02);
+}
+
+@layer base {
+    body {
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        accent-color: var(--color-brand-600);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+    }
+}
+
+/*
+ * Shared UI components. They live in the components layer so any utility
+ * class on the element still wins (e.g. `input w-full`, `btn btn-primary w-full`).
+ */
+@layer components {
+    .page-title {
+        @apply text-2xl font-semibold tracking-tight text-slate-900;
+    }
+
+    .card {
+        @apply rounded-xl border border-slate-200/80 bg-white shadow-sm;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-slate-700;
+    }
+
+    .field-error {
+        @apply mt-1 text-sm text-red-600;
+    }
+
+    .input {
+        @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs transition
+            placeholder:text-slate-400
+            focus:border-brand-500 focus:ring-3 focus:ring-brand-500/20 focus:outline-none
+            disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500;
+    }
+
+    .input-sm {
+        @apply px-2 py-1;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+            disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white shadow-sm hover:bg-brand-700 active:bg-brand-700;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-300 bg-white text-slate-700 shadow-xs hover:bg-slate-50;
+    }
+
+    .btn-ghost {
+        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    }
+
+    .link {
+        @apply font-medium text-brand-600 hover:text-brand-700 hover:underline;
+    }
+
+    .alert-success {
+        @apply rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800;
+    }
+
+    .data-table {
+        @apply min-w-full text-sm;
+    }
+
+    .data-table thead {
+        @apply border-b border-slate-200 bg-slate-50/80 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase;
+    }
+
+    .data-table tbody tr {
+        @apply transition-colors hover:bg-slate-50/70;
+    }
+
+    .side-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900;
+    }
+
+    .side-link svg {
+        @apply size-5 shrink-0 text-slate-400 transition;
+    }
+
+    .side-link:hover svg {
+        @apply text-slate-600;
+    }
+
+    .side-link-active,
+    .side-link-active:hover {
+        @apply bg-brand-50 text-brand-700;
+    }
+
+    .side-link-active svg,
+    .side-link-active:hover svg {
+        @apply text-brand-600;
+    }
+
+    .side-link-locked,
+    .side-link-locked:hover {
+        @apply cursor-not-allowed bg-transparent text-slate-400;
+    }
 }

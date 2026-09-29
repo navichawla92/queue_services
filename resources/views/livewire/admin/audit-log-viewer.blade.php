@@ -1,16 +1,16 @@
 <div class="space-y-4">
-    <h1 class="text-2xl font-semibold">{{ __('Audit log') }}</h1>
+    <h1 class="page-title">{{ __('Audit log') }}</h1>
 
-    <div class="flex flex-wrap gap-3 rounded-lg bg-white p-4 shadow-sm text-sm">
-        <input type="text" wire:model.live.debounce.300ms="action" placeholder="{{ __('Action (e.g. ticket.)') }}" class="rounded border border-slate-300 px-2 py-1">
-        <input type="text" wire:model.live.debounce.300ms="actor" placeholder="{{ __('Actor name') }}" class="rounded border border-slate-300 px-2 py-1">
-        <label>{{ __('From') }} <input type="date" wire:model.live="from" class="rounded border border-slate-300 px-2 py-1"></label>
-        <label>{{ __('To') }} <input type="date" wire:model.live="to" class="rounded border border-slate-300 px-2 py-1"></label>
+    <div class="flex flex-wrap gap-3 card p-4 text-sm">
+        <input type="text" wire:model.live.debounce.300ms="action" placeholder="{{ __('Action (e.g. ticket.)') }}" class="input input-sm">
+        <input type="text" wire:model.live.debounce.300ms="actor" placeholder="{{ __('Actor name') }}" class="input input-sm">
+        <label>{{ __('From') }} <input type="date" wire:model.live="from" class="input input-sm"></label>
+        <label>{{ __('To') }} <input type="date" wire:model.live="to" class="input input-sm"></label>
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-white shadow-sm">
-        <table class="min-w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+    <div class="overflow-x-auto card">
+        <table class="data-table">
+            <thead>
                 <tr>
                     <th class="px-3 py-2">{{ __('When (UTC)') }}</th>
                     <th class="px-3 py-2">{{ __('Actor') }}</th>

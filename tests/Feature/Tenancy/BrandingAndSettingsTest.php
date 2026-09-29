@@ -38,6 +38,25 @@ class BrandingAndSettingsTest extends TestCase
         $this->assertStringStartsWith("tenants/{$a->id}/branding/", $a->logo_path);
     }
 
+    public function test_admin_can_toggle_staff_self_service(): void
+    {
+        [$a] = $this->twoTenants();
+        $a->forceFill(['settings' => ['timezone' => 'Europe/London']])->save();
+        $this->actingAsTenant($a->fresh());
+
+        Livewire::test(BrandingSettings::class)
+            ->assertSet('employees_edit_own_schedule', false)
+            ->set('employees_edit_own_schedule', true)
+            ->set('employees_view_own_feedback', true)
+            ->call('saveSelfService')
+            ->assertSet('selfServiceSaved', true);
+
+        $settings = $a->fresh()->settings();
+        $this->assertTrue($settings->get('employees_edit_own_schedule'));
+        $this->assertTrue($settings->get('employees_view_own_feedback'));
+        $this->assertSame('Europe/London', $settings->timezone(), 'other settings are kept');
+    }
+
     public function test_invalid_color_and_svg_logo_are_rejected(): void
     {
         Storage::fake('public');

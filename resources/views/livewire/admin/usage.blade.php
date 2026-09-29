@@ -1,13 +1,13 @@
 <div class="max-w-4xl space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold">{{ __('Plan & usage') }}</h1>
+        <h1 class="page-title">{{ __('Plan & usage') }}</h1>
         <div class="flex items-center gap-2 text-sm">
-            <input type="month" wire:model.live="period" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Period') }}">
-            <a href="{{ route('admin.usage.export', ['period' => $periodValue]) }}" class="rounded border border-slate-300 px-2 py-1">CSV</a>
+            <input type="month" wire:model.live="period" class="input input-sm" aria-label="{{ __('Period') }}">
+            <a href="{{ route('admin.usage.export', ['period' => $periodValue]) }}" class="btn btn-secondary px-2.5 py-1 text-xs">CSV</a>
         </div>
     </div>
 
-    <div class="rounded-lg bg-white p-5 shadow-sm">
+    <div class="card p-5">
         <div class="text-sm text-slate-500">{{ __('Current plan') }}</div>
         <div class="text-xl font-semibold" data-testid="plan-name">{{ $plan?->name ?? '—' }}</div>
         <div class="mt-3 flex flex-wrap gap-2 text-sm">
@@ -17,8 +17,8 @@
         </div>
     </div>
 
-    <table class="min-w-full rounded-lg bg-white text-sm shadow-sm" data-testid="usage-table">
-        <thead class="bg-slate-50 text-left text-slate-500"><tr><th class="px-3 py-2">{{ __('Item') }}</th><th class="px-3 py-2">{{ __('Used') }}</th><th class="px-3 py-2">{{ __('Limit') }}</th><th class="px-3 py-2 w-1/3"></th></tr></thead>
+    <table class="data-table rounded-xl bg-white shadow-sm ring-1 ring-slate-200/80" data-testid="usage-table">
+        <thead><tr><th class="px-3 py-2">{{ __('Item') }}</th><th class="px-3 py-2">{{ __('Used') }}</th><th class="px-3 py-2">{{ __('Limit') }}</th><th class="px-3 py-2 w-1/3"></th></tr></thead>
         <tbody class="divide-y divide-slate-100">
             @foreach ($rows as $r)
                 <tr>

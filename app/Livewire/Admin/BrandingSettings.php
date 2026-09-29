@@ -33,6 +33,13 @@ class BrandingSettings extends Component
 
     public bool $saved = false;
 
+    /** Staff self-service (opt-in; checked in EmployeeAvailability and FeedbackReview). */
+    public bool $employees_edit_own_schedule = false;
+
+    public bool $employees_view_own_feedback = false;
+
+    public bool $selfServiceSaved = false;
+
     public function mount(TenantContext $context): void
     {
         $tenant = $context->require();
@@ -40,6 +47,8 @@ class BrandingSettings extends Component
         $this->primary_color = $tenant->primary_color;
         $this->accent_color = $tenant->accent_color;
         $this->public_text = $tenant->public_text;
+        $this->employees_edit_own_schedule = (bool) $tenant->settings()->get('employees_edit_own_schedule', false);
+        $this->employees_view_own_feedback = (bool) $tenant->settings()->get('employees_view_own_feedback', false);
     }
 
     public function save(TenantContext $context): void
@@ -65,6 +74,17 @@ class BrandingSettings extends Component
         ])->save();
 
         $this->saved = true;
+    }
+
+    public function saveSelfService(TenantContext $context): void
+    {
+        $tenant = $context->require();
+        $tenant->forceFill(['settings' => array_merge($tenant->settings ?? [], [
+            'employees_edit_own_schedule' => $this->employees_edit_own_schedule,
+            'employees_view_own_feedback' => $this->employees_view_own_feedback,
+        ])])->save();
+
+        $this->selfServiceSaved = true;
     }
 
     public function removeLogo(TenantContext $context): void

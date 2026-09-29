@@ -15,11 +15,11 @@
 @endphp
 <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
-        <h1 class="text-2xl font-semibold">{{ __('Reports') }}</h1>
+        <h1 class="page-title">{{ __('Reports') }}</h1>
         @can('reports.export')
             <div class="flex gap-2 text-sm">
                 @foreach (['summary' => __('Summary'), 'trend' => __('Trend'), 'employee' => __('By employee'), 'department' => __('By department'), 'service' => __('By service'), 'location' => __('By location')] as $type => $label)
-                    <a href="{{ route('admin.reports.export', $exportQuery + ['type' => $type, 'grain' => $grainValue]) }}" class="rounded border border-slate-300 px-2 py-1">CSV: {{ $label }}</a>
+                    <a href="{{ route('admin.reports.export', $exportQuery + ['type' => $type, 'grain' => $grainValue]) }}" class="btn btn-secondary px-2.5 py-1 text-xs">CSV: {{ $label }}</a>
                 @endforeach
             </div>
         @endcan
@@ -29,17 +29,17 @@
 
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-testid="kpi-tiles">
         @foreach ($tiles as [$key, $label, $value])
-            <div class="rounded-lg bg-white p-4 shadow-sm" title="{{ $definitions[$key] ?? '' }}">
+            <div class="card p-4" title="{{ $definitions[$key] ?? '' }}">
                 <div class="flex items-center gap-1 text-sm text-slate-500">{{ $label }} @if (isset($definitions[$key])) <span class="cursor-help rounded-full border px-1 text-xs" aria-label="{{ $definitions[$key] }}">i</span> @endif</div>
                 <div class="text-2xl font-semibold" data-testid="kpi-{{ $key }}">{{ $value }}</div>
             </div>
         @endforeach
     </div>
 
-    <section class="rounded-lg bg-white p-4 shadow-sm">
+    <section class="card p-4">
         <div class="mb-2 flex items-center justify-between">
             <h2 class="font-semibold">{{ __('Volume and times') }}</h2>
-            <select wire:model.live="grain" class="rounded border border-slate-300 px-2 py-1 text-sm" aria-label="{{ __('Group by') }}">
+            <select wire:model.live="grain" class="input input-sm text-sm" aria-label="{{ __('Group by') }}">
                 <option value="day">{{ __('Daily') }}</option><option value="week">{{ __('Weekly') }}</option><option value="month">{{ __('Monthly') }}</option>
             </select>
         </div>
@@ -53,7 +53,7 @@
         </details>
     </section>
 
-    <section class="overflow-x-auto rounded-lg bg-white p-4 shadow-sm">
+    <section class="overflow-x-auto card p-4">
         <h2 class="mb-2 font-semibold">{{ __('Peak hours (check-ins)') }}</h2>
         <table class="text-xs" data-testid="peak-heatmap">
             <thead><tr><th></th>@foreach (range(0, 23) as $h) <th class="w-7 font-normal text-slate-500">{{ $h }}</th> @endforeach</tr></thead>
@@ -73,9 +73,9 @@
 
     <div class="grid gap-4 lg:grid-cols-2">
         @foreach (['employee' => __('By employee'), 'department' => __('By department'), 'service' => __('By service'), 'location' => __('By location')] as $by => $title)
-            <section class="overflow-x-auto rounded-lg bg-white p-4 shadow-sm" data-testid="breakdown-{{ $by }}">
+            <section class="overflow-x-auto card p-4" data-testid="breakdown-{{ $by }}">
                 <h2 class="mb-2 font-semibold">{{ $title }}</h2>
-                <table class="min-w-full text-sm">
+                <table class="data-table">
                     <thead class="text-left text-slate-500"><tr><th>{{ __('Name') }}</th><th>{{ __('Served') }}</th><th>{{ __('Avg wait') }}</th><th>{{ __('Avg service') }}</th><th>{{ __('No-show') }}</th><th>★</th></tr></thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($breakdowns[$by] as $r)

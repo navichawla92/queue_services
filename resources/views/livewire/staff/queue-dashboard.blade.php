@@ -23,44 +23,44 @@
      data-testid="queue-dashboard">
 
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-semibold">{{ __('Queue') }} <span class="text-base font-normal text-slate-500">· {{ $location->name }}</span></h1>
+        <h1 class="page-title">{{ __('Queue') }} <span class="text-base font-normal text-slate-500">· {{ $location->name }}</span></h1>
         <div class="flex items-center gap-3">
             <span x-show="!online" class="rounded bg-amber-100 px-2 py-1 text-xs text-amber-800" data-testid="reconnecting">{{ __('Reconnecting… refreshing every 5 s') }}</span>
             <span class="text-xs text-slate-400">v{{ $version }}</span>
             @can('checkin.create')
-                <a href="{{ route('staff.checkin') }}" class="rounded border border-slate-300 px-3 py-2 text-sm">{{ __('Check in customer') }}</a>
+                <a href="{{ route('staff.checkin') }}" class="btn btn-secondary">{{ __('Check in customer') }}</a>
             @endcan
             @if ($canServe && $me)
-                <button wire:click="callNext" class="rounded bg-green-600 px-5 py-2 font-semibold text-white" data-testid="call-next">{{ __('Call next') }}</button>
+                <button wire:click="callNext" class="btn bg-emerald-600 px-5 font-semibold text-white shadow-sm hover:bg-emerald-700" data-testid="call-next">{{ __('Call next') }}</button>
             @endif
         </div>
     </div>
 
     <livewire:staff.my-status />
 
-    @if ($flash) <p class="rounded bg-green-50 p-3 text-green-800" data-testid="flash">{{ $flash }}</p> @endif
-    @if ($error) <p class="rounded bg-red-50 p-3 text-red-800" role="alert" data-testid="error">{{ $error }}</p> @endif
+    @if ($flash) <p class="alert-success" data-testid="flash">{{ $flash }}</p> @endif
+    @if ($error) <p class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert" data-testid="error">{{ $error }}</p> @endif
 
     {{-- Filters --}}
-    <div class="flex flex-wrap items-center gap-3 rounded-lg bg-white p-3 text-sm shadow-sm">
+    <div class="flex flex-wrap items-center gap-3 card p-3 text-sm">
         <label class="flex items-center gap-1"><input type="checkbox" wire:model.live="mine"> {{ __('My queue') }}</label>
-        <select wire:model.live="filterDepartment" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Department') }}">
+        <select wire:model.live="filterDepartment" class="input input-sm" aria-label="{{ __('Department') }}">
             <option value="">{{ __('All departments') }}</option>
             @foreach ($departments as $d) <option value="{{ $d->id }}">{{ $d->name }}</option> @endforeach
         </select>
-        <select wire:model.live="filterService" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Service') }}">
+        <select wire:model.live="filterService" class="input input-sm" aria-label="{{ __('Service') }}">
             <option value="">{{ __('All services') }}</option>
             @foreach ($services as $s) <option value="{{ $s->id }}">{{ $s->name }}</option> @endforeach
         </select>
-        <select wire:model.live="filterStatus" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Status') }}">
+        <select wire:model.live="filterStatus" class="input input-sm" aria-label="{{ __('Status') }}">
             <option value="">{{ __('All statuses') }}</option>
             @foreach (['waiting', 'called', 'in_service', 'on_hold'] as $st) <option value="{{ $st }}">{{ \App\Domain\Queue\TicketStatus::from($st)->label() }}</option> @endforeach
         </select>
-        <select wire:model.live="filterEmployee" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Employee') }}">
+        <select wire:model.live="filterEmployee" class="input input-sm" aria-label="{{ __('Employee') }}">
             <option value="">{{ __('Any employee') }}</option>
             @foreach ($employees as $e) <option value="{{ $e->id }}">{{ $e->display_name }}</option> @endforeach
         </select>
-        <select wire:model.live="filterType" class="rounded border border-slate-300 px-2 py-1" aria-label="{{ __('Customer type') }}">
+        <select wire:model.live="filterType" class="input input-sm" aria-label="{{ __('Customer type') }}">
             <option value="">{{ __('Walk-ins & appointments') }}</option>
             <option value="walk_in">{{ __('Walk-ins') }}</option>
             <option value="appointment">{{ __('Appointments') }}</option>
@@ -70,9 +70,9 @@
     @foreach ([[__('Now serving'), $serving], [__('Waiting'), $waiting], [__('On hold'), $held]] as [$title, $rows])
         <section>
             <h2 class="mb-2 font-semibold">{{ $title }} <span class="text-slate-400">({{ $rows->count() }})</span></h2>
-            <div class="overflow-x-auto rounded-lg bg-white shadow-sm">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-slate-50 text-left text-slate-500">
+            <div class="overflow-x-auto card">
+                <table class="data-table">
+                    <thead>
                         <tr>
                             <th class="px-3 py-2">{{ __('Ticket') }}</th>
                             <th class="px-3 py-2">{{ __('Customer') }}</th>
@@ -120,35 +120,35 @@
                                     <div class="flex flex-wrap justify-end gap-2">
                                         @switch($t->status->value)
                                             @case('waiting')
-                                                @if ($canManage || $canServe) <button wire:click="openDialog('call', {{ $t->id }})" class="underline">{{ __('Call') }}</button> @endif
+                                                @if ($canManage || $canServe) <button wire:click="openDialog('call', {{ $t->id }})" class="link">{{ __('Call') }}</button> @endif
                                                 @if ($canManage)
-                                                    <button wire:click="openDialog('assign', {{ $t->id }})" class="underline">{{ __('Assign') }}</button>
-                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="underline">{{ __('Transfer') }}</button>
-                                                    <button wire:click="openDialog('hold', {{ $t->id }})" class="underline">{{ __('Hold') }}</button>
+                                                    <button wire:click="openDialog('assign', {{ $t->id }})" class="link">{{ __('Assign') }}</button>
+                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="link">{{ __('Transfer') }}</button>
+                                                    <button wire:click="openDialog('hold', {{ $t->id }})" class="link">{{ __('Hold') }}</button>
                                                     <button wire:click="noShow({{ $t->id }})" wire:confirm="{{ __('Mark as no-show?') }}" class="text-red-600 underline">{{ __('No-show') }}</button>
                                                 @endif
                                                 @break
                                             @case('called')
                                                 @if ($canAct)
-                                                    <button wire:click="start({{ $t->id }})" class="rounded bg-slate-900 px-2 py-1 text-white">{{ __('Start') }}</button>
-                                                    <button wire:click="recall({{ $t->id }})" class="underline">{{ __('Recall') }}</button>
-                                                    <button wire:click="requeue({{ $t->id }})" class="underline">{{ __('Back to queue') }}</button>
-                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="underline">{{ __('Transfer') }}</button>
+                                                    <button wire:click="start({{ $t->id }})" class="btn btn-primary px-2.5 py-1 text-xs">{{ __('Start') }}</button>
+                                                    <button wire:click="recall({{ $t->id }})" class="link">{{ __('Recall') }}</button>
+                                                    <button wire:click="requeue({{ $t->id }})" class="link">{{ __('Back to queue') }}</button>
+                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="link">{{ __('Transfer') }}</button>
                                                     <button wire:click="noShow({{ $t->id }})" wire:confirm="{{ __('Mark as no-show?') }}" class="text-red-600 underline">{{ __('No-show') }}</button>
                                                 @endif
                                                 @break
                                             @case('in_service')
                                                 @if ($canAct)
-                                                    <button wire:click="openDialog('complete', {{ $t->id }})" class="rounded bg-slate-900 px-2 py-1 text-white">{{ __('Complete') }}</button>
-                                                    <button wire:click="openDialog('hold', {{ $t->id }})" class="underline">{{ __('Hold') }}</button>
-                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="underline">{{ __('Transfer') }}</button>
+                                                    <button wire:click="openDialog('complete', {{ $t->id }})" class="btn btn-primary px-2.5 py-1 text-xs">{{ __('Complete') }}</button>
+                                                    <button wire:click="openDialog('hold', {{ $t->id }})" class="link">{{ __('Hold') }}</button>
+                                                    <button wire:click="openDialog('transfer', {{ $t->id }})" class="link">{{ __('Transfer') }}</button>
                                                 @endif
                                                 @break
                                             @case('on_hold')
-                                                @if ($canManage) <button wire:click="release({{ $t->id }})" class="underline">{{ __('Release') }}</button> @endif
+                                                @if ($canManage) <button wire:click="release({{ $t->id }})" class="link">{{ __('Release') }}</button> @endif
                                                 @break
                                         @endswitch
-                                        <button wire:click="openDialog('note', {{ $t->id }})" class="underline">{{ __('Notes') }}</button>
+                                        <button wire:click="openDialog('note', {{ $t->id }})" class="link">{{ __('Notes') }}</button>
                                     </div>
                                 </td>
                             </tr>
@@ -164,7 +164,7 @@
     <section data-testid="todays-appointments">
         <div class="mb-2 flex items-center justify-between">
             <h2 class="font-semibold">{{ __("Today's appointments") }} <span class="text-slate-400">({{ $appointments->count() }})</span></h2>
-            @can('appointments.manage') <a href="{{ route('staff.appointments') }}" class="text-sm underline">{{ __('Manage') }}</a> @endcan
+            @can('appointments.manage') <a href="{{ route('staff.appointments') }}" class="link text-sm">{{ __('Manage') }}</a> @endcan
         </div>
         <div class="flex flex-wrap gap-2 text-sm">
             @forelse ($appointments as $a)
@@ -193,20 +193,20 @@
     {{-- Action dialog --}}
     @if ($dialog && $dialogTicket)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" wire:keydown.escape="closeDialog">
-            <form wire:submit="confirmDialog" class="w-full max-w-lg space-y-4 rounded-lg bg-white p-6 shadow-xl" data-testid="dialog">
+            <form wire:submit="confirmDialog" class="w-full max-w-lg space-y-4 rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-slate-900/5" data-testid="dialog">
                 <h3 class="text-lg font-semibold">
                     {{ match ($dialog) { 'transfer' => __('Transfer'), 'hold' => __('Place on hold'), 'note' => __('Internal notes'), 'complete' => __('Complete service'), 'assign' => __('Assign'), 'call' => __('Call customer'), default => '' } }}
                     · {{ $dialogTicket->number }}
                 </h3>
 
                 @if (in_array($dialog, ['transfer'], true))
-                    <select wire:model="targetDepartmentId" class="w-full rounded border border-slate-300 px-2 py-2" aria-label="{{ __('Department') }}">
+                    <select wire:model="targetDepartmentId" class="w-full input" aria-label="{{ __('Department') }}">
                         <option value="">{{ __('Same department') }}</option>
                         @foreach ($departments as $d) <option value="{{ $d->id }}">{{ $d->name }}</option> @endforeach
                     </select>
                 @endif
                 @if (in_array($dialog, ['transfer', 'assign'], true) || ($dialog === 'call' && $canManage))
-                    <select wire:model="targetEmployeeId" class="w-full rounded border border-slate-300 px-2 py-2" aria-label="{{ __('Employee') }}">
+                    <select wire:model="targetEmployeeId" class="w-full input" aria-label="{{ __('Employee') }}">
                         <option value="">{{ $dialog === 'call' ? __('Me') : __('Anyone eligible') }}</option>
                         @foreach ($employees as $e) <option value="{{ $e->id }}">{{ $e->display_name }}</option> @endforeach
                     </select>
@@ -221,15 +221,15 @@
                     </ul>
                 @endif
                 @if (in_array($dialog, ['transfer', 'hold', 'note', 'complete'], true))
-                    <textarea wire:model="text" rows="3" class="w-full rounded border border-slate-300 px-2 py-2"
+                    <textarea wire:model="text" rows="3" class="w-full input"
                               placeholder="{{ match ($dialog) { 'hold' => __('Reason (optional)'), 'complete' => __('Outcome (optional)'), 'transfer' => __('Note for the next employee (optional)'), default => __('Internal note — never shown to customers') } }}"></textarea>
                     @error('text') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                 @endif
                 @if ($error) <p class="text-sm text-red-600">{{ $error }}</p> @endif
 
                 <div class="flex justify-end gap-3">
-                    <button type="button" wire:click="closeDialog" class="px-4 py-2">{{ __('Cancel') }}</button>
-                    <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">{{ $dialog === 'note' ? __('Add note') : __('Confirm') }}</button>
+                    <button type="button" wire:click="closeDialog" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ $dialog === 'note' ? __('Add note') : __('Confirm') }}</button>
                 </div>
             </form>
         </div>

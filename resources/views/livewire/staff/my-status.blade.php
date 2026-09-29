@@ -1,6 +1,6 @@
 <div>
     @if ($employee && $location)
-        <div class="flex flex-wrap items-center gap-4 rounded-lg bg-white p-4 shadow-sm" data-testid="my-status">
+        <div class="flex flex-wrap items-center gap-4 card p-4" data-testid="my-status">
             <div>
                 <div class="text-sm text-slate-500">{{ __('My status') }}</div>
                 <div class="font-semibold">
@@ -13,7 +13,7 @@
 
             <div>
                 <label for="my-desk" class="block text-sm text-slate-500">{{ __('Desk / room') }}</label>
-                <select id="my-desk" wire:model.live="deskId" class="rounded border border-slate-300 px-2 py-1">
+                <select id="my-desk" wire:model.live="deskId" class="input input-sm">
                     <option value="">—</option>
                     @foreach ($desks as $desk) <option value="{{ $desk->id }}">{{ $desk->label }}</option> @endforeach
                 </select>
@@ -23,9 +23,9 @@
             <div class="flex gap-2">
                 @foreach ($statuses as $status)
                     <button wire:click="setStatus('{{ $status->value }}')" @class([
-                        'rounded px-3 py-2 text-sm',
-                        'bg-slate-900 text-white' => $employee->status === $status,
-                        'border border-slate-300' => $employee->status !== $status,
+                        'btn px-3',
+                        'bg-brand-600 text-white shadow-sm' => $employee->status === $status,
+                        'btn-secondary' => $employee->status !== $status,
                     ])>{{ $status === \App\Domain\Organization\EmployeeStatus::Available && $employee->status === \App\Domain\Organization\EmployeeStatus::Offline ? __('Start shift') : $status->label() }}</button>
                 @endforeach
             </div>

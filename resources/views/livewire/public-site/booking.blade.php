@@ -30,7 +30,7 @@
                         <button wire:click="chooseEmployee({{ $e->id }})" class="rounded-xl border-2 border-slate-200 px-4 py-3 text-left">{{ $e->display_name }}</button>
                     @endforeach
                 </div>
-                <button wire:click="back" class="text-sm underline">{{ __('Back') }}</button>
+                <button wire:click="back" class="link text-sm">{{ __('Back') }}</button>
                 @break
 
             @case('date')
@@ -54,7 +54,7 @@
                         @endforeach
                     </div>
                 @endif
-                <button wire:click="back" class="text-sm underline">{{ __('Back') }}</button>
+                <button wire:click="back" class="link text-sm">{{ __('Back') }}</button>
                 @break
 
             @case('details')
